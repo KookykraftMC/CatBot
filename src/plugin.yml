@@ -1,0 +1,10 @@
+main: com.kookykraftmc.CatBot.Main
+name: CatBot
+version: 4.0
+authors: [Time6628, Kraise_]
+description: KKMC's ChatBox plugin.
+
+commands:
+  catbot:
+    description: Do stuff with catbot
+    usage: /catbot reload|pet|redeem|warn

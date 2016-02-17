@@ -1,0 +1,39 @@
+#Msg shown when people say bad things
+DenyMsg: "We do not allow that kind of language! Sorry!"
+
+#Make sure this is properly formatted regex
+#Do not edit unless you know what you're doing
+#Remember that \b becomes \\b because Java is a scrub
+#Jk, ily Java
+BadWords:
+  - "\\bl(a|@)gg?(y|ing)?\\b"
+  - "dick"
+  - "fuck"
+  - "\\b(bull)?shit(ty)?\\b"
+  - "crap(py)?"
+  - "penis"
+  - "vagina"
+  - "fag"
+  - "\\brape"
+  - "slut"
+  - "hitler"
+  - "\\b(jack)?ass(hole)?\\b"
+  - "arse(hole)?"
+  - "bitch"
+  - "whore"
+  - "nigg(er|a)"
+  - "negro"
+  - "retard"
+  - "\\bcum\\b"
+  - "cunt"
+  - "dildo"
+  - "bollocks?"
+  - "\\bwank"
+  - "jizz"
+  - "piss"
+
+#Words that could be used to replace bad words
+ReplaceWords:
+  - "meow"
+  - "purr"
+  - "hiss"

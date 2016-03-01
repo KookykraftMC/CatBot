@@ -20,7 +20,7 @@ public class CommandGeneral implements CommandExecutor
 	{
 		if (args.length == 0)
 		{
-			sender.sendMessage(Main.CatBotPrefix + "Meow.");
+			sender.sendMessage(CatBot.prefix + "Meow.");
 			return false;
 		}
 		switch(args[0])
@@ -29,17 +29,17 @@ public class CommandGeneral implements CommandExecutor
 			if (sender.hasPermission("catbot.reload"))
 			{
 				CatFilterEvents.loadCfg();
-				sender.sendMessage(Main.CatBotPrefix + "Catbot reloaded. Meow.");
+				sender.sendMessage(CatBot.prefix + "Catbot reloaded. Meow.");
 			}
 			else
 			{
-				sender.sendMessage(Main.CatBotPrefix + "Hiss! (you do not have permission to do this!)");
+				sender.sendMessage(CatBot.prefix + "Hiss! (you do not have permission to do this!)");
 			}
 			break;
 			
 			
 		case "pet":
-			sender.sendMessage(Main.CatBotPrefix +"Purr :3");
+			sender.sendMessage(CatBot.prefix +"Purr :3");
 			break;
 			
 			
@@ -55,13 +55,13 @@ public class CommandGeneral implements CommandExecutor
 			//Check for permission
 			if(!sender.hasPermission("catbot.redeem"))
 			{
-				sender.sendMessage(Main.CatBotPrefix + "Hiss! (you do not have permission to do this!)");
+				sender.sendMessage(CatBot.prefix + "Hiss! (you do not have permission to do this!)");
 				return true;
 			}
 			//Check all required arguments are present
 			if(args.length < 3)
 			{
-				sender.sendMessage(Main.CatBotPrefix + "Usage: /catbot redeem <player> <itemID> (amount) (meta)");
+				sender.sendMessage(CatBot.prefix + "Usage: /catbot redeem <player> <itemID> (amount) (meta)");
 				return true;
 			}
 			//Assign default values to metadata and amount
@@ -78,14 +78,14 @@ public class CommandGeneral implements CommandExecutor
 			//Make sure all numeric arguments are numeric
 			if (!StringUtils.isNumeric((newArgs[2] + newArgs[3] + newArgs[4])))
 			{
-				sender.sendMessage(Main.CatBotPrefix + "Make sure your arguments are in the right order");
-				sender.sendMessage(Main.CatBotPrefix + "Usage: /catbot redeem <player> <itemID> (amount) (meta)");
+				sender.sendMessage(CatBot.prefix + "Make sure your arguments are in the right order");
+				sender.sendMessage(CatBot.prefix + "Usage: /catbot redeem <player> <itemID> (amount) (meta)");
 				return true;
 			}
 			//Check that player is online (otherwise give won't work)
 			if (Bukkit.getPlayer(newArgs[1]).equals(null))
 			{
-				sender.sendMessage(Main.CatBotPrefix + "Player not found.");
+				sender.sendMessage(CatBot.prefix + "Player not found.");
 				return true;
 			}
 			//Give permissions
@@ -96,7 +96,7 @@ public class CommandGeneral implements CommandExecutor
 			//Give items
 			cmd = "give " + newArgs[1] + " " + newArgs[2] + " " + newArgs[3] + " " +newArgs[4];
 			server.dispatchCommand(console, cmd);
-			sender.sendMessage(Main.CatBotPrefix + "Giving " + newArgs[1] + " " + newArgs[3] + " of item " + newArgs[2] + ":" + newArgs[4] + ".");
+			sender.sendMessage(CatBot.prefix + "Giving " + newArgs[1] + " " + newArgs[3] + " of item " + newArgs[2] + ":" + newArgs[4] + ".");
 			break;
 			
 			
@@ -104,24 +104,24 @@ public class CommandGeneral implements CommandExecutor
 			//Check for permission
 			if(!sender.hasPermission("catbot.warn"))
 			{
-				sender.sendMessage(Main.CatBotPrefix + "Hiss! (you do not have permission to do this!)");
+				sender.sendMessage(CatBot.prefix + "Hiss! (you do not have permission to do this!)");
 				return true;
 			}
 			//Check all required arguments are present
 			if(args.length < 2)
 			{
-				sender.sendMessage(Main.CatBotPrefix + "Usage: /catbot warn <player>");
+				sender.sendMessage(CatBot.prefix + "Usage: /catbot warn <player>");
 				return true;
 			}
 			//Check that the player is online and send message
 			p = Bukkit.getPlayer(args[1]);
 			if (p == null)
 			{
-				sender.sendMessage(Main.CatBotPrefix + "Player not found.");
+				sender.sendMessage(CatBot.prefix + "Player not found.");
 				return true;
 			}
-			p.sendMessage(Main.CatBotPrefix + "Please mind your language, if you continue to bypass catbot you will be muted.");
-			sender.sendMessage(Main.CatBotPrefix + "Warning " + args[1] + " about their language.");
+			p.sendMessage(CatBot.prefix + "Please mind your language, if you continue to bypass catbot you will be muted.");
+			sender.sendMessage(CatBot.prefix + "Warning " + args[1] + " about their language.");
 			break;
 			
 			
@@ -133,29 +133,29 @@ public class CommandGeneral implements CommandExecutor
 			//Check for permission
 			if(!sender.hasPermission("catbot.showtps"))
 			{
-				sender.sendMessage(Main.CatBotPrefix + "Hiss! (you do not have permission to do this!)");
+				sender.sendMessage(CatBot.prefix + "Hiss! (you do not have permission to do this!)");
 				return true;
 			}
 			//Check all required arguments are present
 			if(args.length < 2)
 			{
-				sender.sendMessage(Main.CatBotPrefix + "Usage: /catbot showtps <player>");
+				sender.sendMessage(CatBot.prefix + "Usage: /catbot showtps <player>");
 				return true;
 			}
 			//Check that the player is online and show tps
 			p = Bukkit.getPlayer(args[1]);
 			if (p == null)
 			{
-				sender.sendMessage(Main.CatBotPrefix + "Player not found.");
+				sender.sendMessage(CatBot.prefix + "Player not found.");
 				return true;
 			}
 			p.performCommand("cofh tps");
-			sender.sendMessage(Main.CatBotPrefix + "Showing " + args[1] + "the tps.");
+			sender.sendMessage(CatBot.prefix + "Showing " + args[1] + "the tps.");
 			break;
 			
 			
 		default:
-			sender.sendMessage(Main.CatBotPrefix + "Meow.");
+			sender.sendMessage(CatBot.prefix + "Meow.");
 			return false;
 		}
 		return true;

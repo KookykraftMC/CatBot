@@ -5,6 +5,7 @@ DenyMsg: "We do not allow that kind of language! Sorry!"
 #Do not edit unless you know what you're doing
 #Remember that \b becomes \\b because Java is a scrub
 #Jk, ily Java
+#Leave blank to disable chat filter
 BadWords:
   - "\\bl(a|@)gg?(y|ing)?\\b"
   - "dick"
@@ -37,3 +38,24 @@ ReplaceWords:
   - "meow"
   - "purr"
   - "hiss"
+
+#How to assign tags to groups - should be in the form "group,colour" (no space)
+#Groups must be exactly as in permissions.yml, case insensitive. Will appear ingame as written here
+#Colours should be as seen in game (d represents pink etc.)
+#All groups not assigned colours will be given the prefix "&8Cat", to avoid needing too many
+#Use "s" to get SeniorAdmin premade tag, "u" for UltimateKat, "w" for Owner
+#Leave blank to disable nameplate changing
+GroupColours:
+  - "Owner,w"
+  - "SeniorAdmin,s"
+  - "Admin,4"
+  - "Mod,c"
+  - "Builder,3"
+  - "VIP,2"
+  - "VIP+,a"
+  - "KoolKat,5"
+  - "KatGod,6"
+  - "UltimateKat,u"
+  - "Fan,9"
+  - "Member,e"
+  - "Default,0"

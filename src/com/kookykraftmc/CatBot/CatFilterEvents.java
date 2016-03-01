@@ -11,22 +11,21 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class CatFilterEvents implements Listener 
 {
-	static public Main plugin;
+	static public CatBot plugin;
 	static public List<String> badWords;
 	static public String denyMsg;
 	static public Random rdm = new Random();
 	static public List<String> replaceWords;
 	public String replaceWord;
 	
-	public CatFilterEvents(Main plgn)
+	public CatFilterEvents(CatBot catBot)
 	{
-		plugin = plgn;
+		plugin = catBot;
 		loadCfg();
 	}
 	public static void loadCfg()
 	{
 		//Get things from the config file
-		plugin.reloadConfig();
 		badWords = plugin.getConfig().getStringList("BadWords");
 		denyMsg = plugin.getConfig().getString("DenyMsg");
 		replaceWords = plugin.getConfig().getStringList("ReplaceWords");
@@ -50,7 +49,7 @@ public class CatFilterEvents implements Listener
 		}
 		e.setMessage(message);
 		if (isBad)
-			p.sendMessage(Main.CatBotPrefix + denyMsg);
+			p.sendMessage(CatBot.prefix + denyMsg);
 		
 	}
 	

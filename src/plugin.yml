@@ -1,7 +1,8 @@
-main: com.kookykraftmc.CatBot.Main
+main: com.kookykraftmc.CatBot.CatBot
 name: CatBot
-version: 4.0
+version: 4.1
 authors: [Time6628, Kraise_]
+depend: [Vault]
 description: KKMC's ChatBox plugin.
 
 commands:

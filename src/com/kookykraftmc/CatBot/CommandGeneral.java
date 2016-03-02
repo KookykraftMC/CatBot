@@ -1,5 +1,7 @@
 package com.kookykraftmc.CatBot;
 
+import java.util.logging.Logger;
+
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
@@ -15,6 +17,7 @@ public class CommandGeneral implements CommandExecutor
 	static ConsoleCommandSender console = Bukkit.getConsoleSender();
 	static String cmd;
 	static Player p;
+	Logger log = CatBot.log;
 	@Override
 	public boolean onCommand(CommandSender sender, Command commd, String label, String[] args) 
 	{
@@ -30,6 +33,7 @@ public class CommandGeneral implements CommandExecutor
 			{
 				CatFilterEvents.loadCfg();
 				sender.sendMessage(CatBot.prefix + "Catbot reloaded. Meow.");
+				log.info(CatBot.cPrefix + "CatBot Reloaded. Meow.");
 			}
 			else
 			{
@@ -97,6 +101,7 @@ public class CommandGeneral implements CommandExecutor
 			cmd = "give " + newArgs[1] + " " + newArgs[2] + " " + newArgs[3] + " " +newArgs[4];
 			server.dispatchCommand(console, cmd);
 			sender.sendMessage(CatBot.prefix + "Giving " + newArgs[1] + " " + newArgs[3] + " of item " + newArgs[2] + ":" + newArgs[4] + ".");
+			log.info(CatBot.cPrefix + sender.getName() + " redeemed " + " " + newArgs[3] + " of item " + newArgs[2] + ":" + newArgs[4] + " to " + newArgs[1] + ".");
 			break;
 			
 			
@@ -122,6 +127,7 @@ public class CommandGeneral implements CommandExecutor
 			}
 			p.sendMessage(CatBot.prefix + "Please mind your language, if you continue to bypass catbot you will be muted.");
 			sender.sendMessage(CatBot.prefix + "Warning " + args[1] + " about their language.");
+			log.info(CatBot.cPrefix + args[1] + " was warned by " + sender.getName() + ".");
 			break;
 			
 			

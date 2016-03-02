@@ -2,6 +2,7 @@ package com.kookykraftmc.CatBot;
 
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,6 +18,7 @@ public class CatFilterEvents implements Listener
 	static public Random rdm = new Random();
 	static public List<String> replaceWords;
 	public String replaceWord;
+	static Logger log = CatBot.log;
 	
 	public CatFilterEvents(CatBot catBot)
 	{
@@ -37,7 +39,8 @@ public class CatFilterEvents implements Listener
 		String message = e.getMessage();
 		Player p = e.getPlayer();
 		boolean isBad = false;
-		
+		if(p.hasPermission("catbot.bypassfilter"))
+			return;
 		for (String bad:badWords)
 		{
 			if(message.toLowerCase().matches("(?iu).*" + bad + ".*"))
@@ -49,8 +52,10 @@ public class CatFilterEvents implements Listener
 		}
 		e.setMessage(message);
 		if (isBad)
+		{
+			log.info(CatBot.cPrefix + p.getName() + " tried to use a bad word.");
 			p.sendMessage(CatBot.prefix + denyMsg);
-		
+		}
 	}
 	
 }

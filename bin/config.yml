@@ -45,17 +45,19 @@ ReplaceWords:
 #All groups not assigned colours will be given the prefix "&8Cat", to avoid needing too many
 #Use "s" to get SeniorAdmin premade tag, "u" for UltimateKat, "w" for Owner
 #Leave blank to disable nameplate changing
+#Tags will be assigned with a priority based on position - player with KoolKat and Mod will be tagged as mod
 GroupColours:
-  - "Owner,w"
-  - "SeniorAdmin,s"
-  - "Admin,4"
-  - "Mod,c"
-  - "Builder,3"
+  - "Default,f"
+  - "Member,e"
+  - "Fan,9"
   - "VIP,2"
   - "VIP+,a"
   - "KoolKat,5"
   - "KatGod,6"
   - "UltimateKat,u"
-  - "Fan,9"
-  - "Member,e"
-  - "Default,0"
+  - "Developer,b"
+  - "Helper,b"
+  - "Mod,c"
+  - "Admin,4"
+  - "SeniorAdmin,s"
+  - "Owner,w"

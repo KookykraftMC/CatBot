@@ -43,11 +43,11 @@ ReplaceWords:
 #Groups must be exactly as in permissions.yml, case insensitive. Will appear ingame as written here
 #Colours should be as seen in game (d represents pink etc.)
 #All groups not assigned colours will be given the prefix "&8Cat", to avoid needing too many
-#Use "s" to get SeniorAdmin premade tag, "u" for UltimateKat, "w" for Owner
+#Use "s" to get SeniorAdmin premade tag, "u" for UltimateKat, "w" for Owner, "g" for guest
 #Leave blank to disable nameplate changing
 #Tags will be assigned with a priority based on position - player with KoolKat and Mod will be tagged as mod
 GroupColours:
-  - "Default,f"
+  - "Default,g"
   - "Member,e"
   - "Fan,9"
   - "VIP,2"

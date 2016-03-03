@@ -69,13 +69,11 @@ public class SetNameplateListener implements Listener
 		int prefIndex = groupList.indexOf(pPrefix);
 		int groupIndex = -1;
 		if(permsInfo.getPlayerGroups(p).length > 0)
-		{
 			for(String g:permsInfo.getPlayerGroups(p))
 			{
 				i = groupList.indexOf(g);
 				groupIndex = i>groupIndex?i:groupIndex;
 			}
-		}
 		i = groupIndex<prefIndex?prefIndex:groupIndex;
 		
 		if(i!=-1)
@@ -95,11 +93,11 @@ public class SetNameplateListener implements Listener
 	{
 		clearTeams();
 		groupList = plugin.getConfig().getStringList("GroupColours");
-		groups = new Team[groupList.size()-1];
+		groups = new Team[groupList.size()];
 		String[] groupCol;
 		String tag;
 		char col;
-		for(int i = 0;i<groupList.size()-1;i++)
+		for(int i = 0;i<groupList.size();i++)
 		{
 			groupCol = groupList.get(i).split(",");
 			groups[i] = board.registerNewTeam(groupCol[0]);
@@ -115,13 +113,14 @@ public class SetNameplateListener implements Listener
 			case 'w':
 				tag = (ChatColor.DARK_PURPLE + "[Owner]" + ChatColor.LIGHT_PURPLE);
 				break;
+			case 'g':
+				tag = (ChatColor.WHITE + "[Guest]");
+				break;
 			default:
 				tag = (ChatColor.getByChar(col) + "[" + groupCol[0] + "]");
 				break;
 			}
 			board.getTeam(groupCol[0]).setPrefix(tag);
-			
-			//Need to do this to make it searchable
 			groupList.set(i, groupCol[0].toLowerCase());
 		}
 		log.info(CatBot.cPrefix + "Adding groups from config.");

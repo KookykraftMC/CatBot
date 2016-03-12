@@ -130,7 +130,6 @@ public class SetNameplateListener implements Listener
 	{
 		for(Team t:board.getTeams())
 			t.unregister();
-		log.info(CatBot.cPrefix + "Removing groups.");
 	}
 
 }

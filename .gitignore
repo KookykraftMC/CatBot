@@ -7,3 +7,6 @@
 *.classpath
 *.project
 *.prefs
+bin/
+bin/config.yml
+bin/plugin.yml

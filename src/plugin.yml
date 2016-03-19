@@ -2,7 +2,7 @@ main: com.kookykraftmc.CatBot.CatBot
 name: CatBot
 version: 4.3
 authors: [Time6628, Kraise_]
-depend: [Vault, Prism]
+depend: [Vault]
 description: KKMC's ChatBox plugin.
 
 commands:
@@ -10,5 +10,5 @@ commands:
     description: Do stuff with catbot
     usage: /catbot reload|pet|redeem|warn
   findname:
-    description: Find names of items
+    description: Find material names of items
     usage: /findname id|hand

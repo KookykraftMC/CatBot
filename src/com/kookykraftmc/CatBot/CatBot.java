@@ -50,16 +50,7 @@ public class CatBot extends JavaPlugin
         getServer().getPluginManager().registerEvents(new SetNameplateListener(this), this);
         log.info(cPrefix + "Nameplate Changer Enabled.");
         }
-        if(getConfig().getStringList("LogItems").isEmpty())
-        {
-        	log.info(cPrefix + "No Items to log found. Interaction listener disabled.");
-        }
-        else
-        {
-        	getServer().getPluginManager().registerEvents(new ClickListener(this), this);
-        	log.info(cPrefix + "Interaction listener enabled.");
-        }
-        
+
         this.getCommand("findname").setExecutor(new CommandFindName());
         this.getCommand("catbot").setExecutor(new CommandGeneral());
         log.info(cPrefix + "Commands Enabled.");
@@ -79,7 +70,6 @@ public class CatBot extends JavaPlugin
 		this.reloadConfig();
 		CatFilterEvents.loadCfg();
 		SetNameplateListener.loadCfg();
-		ClickListener.loadCfg();
 	}
 	
 }

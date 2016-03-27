@@ -80,10 +80,10 @@ public class CommandGeneral implements CommandExecutor
 				break;
 			}
 			//Make sure all numeric arguments are numeric
-			if (!StringUtils.isNumeric((newArgs[2] + newArgs[3] + newArgs[4])))
+			if (!StringUtils.isNumeric(newArgs[3] + newArgs[4]))
 			{
 				sender.sendMessage(CatBot.prefix + "Make sure your arguments are in the right order");
-				sender.sendMessage(CatBot.prefix + "Usage: /catbot redeem <player> <itemID> (amount) (meta)");
+				sender.sendMessage(CatBot.prefix + "Usage: /catbot redeem <player> <itemName> (amount) (meta)");
 				return true;
 			}
 			//Check that player is online (otherwise give won't work)
@@ -93,9 +93,11 @@ public class CommandGeneral implements CommandExecutor
 				return true;
 			}
 			//Give permissions
-			cmd = "pex user " + newArgs[1] + " add itemrestrict.bypass.usage." + newArgs[2] + "-" + newArgs[4];
+			cmd = "pex user " + newArgs[1] + " add itemrestrict.bypass.Usage." + newArgs[2] + "-" + newArgs[4];
 			server.dispatchCommand(console, cmd);
-			cmd = "pex user " + newArgs[1] + " add itemrestrict.bypass.ownership." + newArgs[2] + "-" + newArgs[4];
+			cmd = "pex user " + newArgs[1] + " add itemrestrict.bypass.Ownership." + newArgs[2] + "-" + newArgs[4];
+			server.dispatchCommand(console,cmd);
+			cmd = "pex user " + newArgs[1] + " add itemrestrict.bypass.Equip." + newArgs[2] + "-" + newArgs[4];
 			server.dispatchCommand(console,cmd);
 			//Give items
 			cmd = "give " + newArgs[1] + " " + newArgs[2] + " " + newArgs[3] + " " +newArgs[4];

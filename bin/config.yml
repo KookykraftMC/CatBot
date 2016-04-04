@@ -1,5 +1,5 @@
 #Do not change this, this is the option that resets outdated config
-Version: 4.3
+Version: 4.3.1
 
 #Msg shown when people say bad things
 DenyMsg: "We do not allow that kind of language! Sorry!"
@@ -10,10 +10,10 @@ DenyMsg: "We do not allow that kind of language! Sorry!"
 #Jk, ily Java
 #Leave blank to disable chat filter
 BadWords:
-  - "\\bl(a|@)g*(y|ing)?\\b"
+  - "\\bl(a|@)g+(y|ing)?\\b"
   - "dick"
   - "fuck"
-  - "\\b(bull)?shit(ty)?\\b"
+  - "\\b(bull)?shitt?(ing|y)?\\b"
   - "\\b(bull)?crap(py)?"
   - "penis"
   - "vagina"

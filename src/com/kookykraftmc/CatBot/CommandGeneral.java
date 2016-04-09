@@ -87,7 +87,7 @@ public class CommandGeneral implements CommandExecutor
 				return true;
 			}
 			//Check that player is online (otherwise give won't work)
-			if (Bukkit.getPlayer(newArgs[1]).equals(null))
+			if (Bukkit.getPlayer(newArgs[1]) == null)
 			{
 				sender.sendMessage(CatBot.prefix + "Player not found.");
 				return true;

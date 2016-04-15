@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
@@ -29,16 +28,14 @@ public class SetNameplateListener implements Listener
     static Team cat;
     static Team senioradmin;
     static Team ultimatekat;
-	static public Permission permsInfo;
-	static public Chat chatInfo;
+	Permission permsInfo;
+	Chat chatInfo;
 
 	public SetNameplateListener(CatBot catBot)
 	{
 		plugin = catBot;
-	    RegisteredServiceProvider<Permission> rspPerms = plugin.getServer().getServicesManager().getRegistration(Permission.class);
-	    permsInfo = rspPerms.getProvider();
-	    RegisteredServiceProvider<Chat> rspChat = plugin.getServer().getServicesManager().getRegistration(Chat.class);
-	    chatInfo = rspChat.getProvider();
+	    permsInfo = plugin.rspPerms.getProvider();
+	    chatInfo = plugin.rspChat.getProvider();
 	    board = boardManager.getNewScoreboard();
 		loadCfg();
 	    cat = board.registerNewTeam("Cat");
@@ -52,19 +49,28 @@ public class SetNameplateListener implements Listener
 		Player p = e.getPlayer();
 		OfflinePlayer offPlayer = Bukkit.getOfflinePlayer(p.getUniqueId());
 		String name = p.getName();
+		//Warn if player has no prefix/group because that's pretty strange
 		if((permsInfo.getPlayerGroups(p).length==0)||chatInfo.getPlayerPrefix(p).isEmpty())
 		{
 			log.warning(CatBot.prefix + name + " had no prefix and/or group!");
 			return;
 		}
+		
+		//Get player's prefix, without colours or []
 		String pPrefix = chatInfo.getPlayerPrefix(p);
-		pPrefix = pPrefix.substring(3, pPrefix.length()-1).toLowerCase();
-		if(pPrefix.contains("helper"))
+		pPrefix = pPrefix.replace("[", "").replace("]", "").toLowerCase();
+		if(pPrefix.contains("&"))
+		    pPrefix = pPrefix.substring(2);
+		/*if(pPrefix.contains("helper"))
 			pPrefix = "helper";
 		else if(pPrefix.contains("developer"))
 			pPrefix = "developer";
-		board.resetScores(offPlayer);
+		*/
+		//Reset player's scoreboard just in case
+		board.resetScores(p);
 		p.setScoreboard(board);
+		
+		//Iterate through player's groups to find one with highest priority
 		int i;
 		int prefIndex = groupList.indexOf(pPrefix);
 		int groupIndex = -1;
@@ -76,6 +82,7 @@ public class SetNameplateListener implements Listener
 			}
 		i = groupIndex<prefIndex?prefIndex:groupIndex;
 		
+		//Set player's prefix as long as they have one
 		if(i!=-1)
 		{
 			groups[i].addPlayer(offPlayer);

@@ -1,0 +1,11 @@
+#Do not change this, this is the option that will resets outdated files
+Version: 4.4
+
+#List of commands to execute later. I wouldn't recommend manually editting this
+#but if you really really really want to it probably wouldn't be hard.
+StoredCommands:
+    1:
+        Player: CatBot
+        SentBy: Kraise_
+        Command: redeem kraise_ wool 2
+        TimeStamp: 10:32 15/04/2016

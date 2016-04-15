@@ -17,7 +17,6 @@ public class CatFilterEvents implements Listener
 	static public String denyMsg;
 	static public Random rdm = new Random();
 	static public List<String> replaceWords;
-	public String replaceWord;
 	static Logger log = CatBot.log;
 	
 	public CatFilterEvents(CatBot catBot)
@@ -45,7 +44,7 @@ public class CatFilterEvents implements Listener
 		{
 			if(message.toLowerCase().matches("(?iu).*" + bad + ".*"))
 			{
-				replaceWord = replaceWords.get(rdm.nextInt(replaceWords.size()));
+				String replaceWord = replaceWords.get(rdm.nextInt(replaceWords.size()));
 				message = message.replaceAll("(?iu)" + bad,replaceWord);
 				isBad = true;
 			}

@@ -1,5 +1,5 @@
 #Do not change this, this is the option that resets outdated config
-Version: 4.3.1
+Version: 4.4
 
 #Msg shown when people say bad things
 DenyMsg: "We do not allow that kind of language! Sorry!"
@@ -65,3 +65,15 @@ GroupColours:
   - "Admin,4"
   - "SeniorAdmin,s"
   - "Owner,w"
+
+#Groups that can be assigned using catbot - case insensitive
+AllowedGroups:
+  - "default"
+  - "member"
+  - "fan"
+  - "VIP"
+  - "VIP+"
+  - "KoolKat"
+  - "KatGod"
+  - "UltimateKat"
+  - "UnlimitedHomes"

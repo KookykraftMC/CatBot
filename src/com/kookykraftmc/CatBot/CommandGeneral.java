@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,12 +19,12 @@ import net.milkbowl.vault.permission.Permission;
 
 public class CommandGeneral implements CommandExecutor
 {
-	static Server server = Bukkit.getServer();
 	static Plugin plugin;
 	static String iresPrefix = "itemrestrict.bypass.";
 	static List<String> promoteGroups = new Vector<String>();
 	static Logger log = CatBot.log;
 	static Permission perms;
+	private CommandSender sender;
 	
 	CommandGeneral(CatBot catBot)
 	{
@@ -33,14 +32,16 @@ public class CommandGeneral implements CommandExecutor
 	    perms = catBot.rspPerms.getProvider();
 	    loadCfg();
 	}
-	
+
+	@SuppressWarnings("deprecation")
 	@Override
-	public boolean onCommand(CommandSender sender, Command commd, String label, String[] args) 
+	public boolean onCommand(CommandSender sndr, Command commd, String label, String[] args) 
 	{
+		sender = sndr;
 	    Player p;
 		if (args.length == 0)
 		{
-			sender.sendMessage(CatBot.prefix + "Meow.");
+			msgSender("Meow.");
 			return false;
 		}
 		switch(args[0])
@@ -49,18 +50,19 @@ public class CommandGeneral implements CommandExecutor
 			if (sender.hasPermission("catbot.reload"))
 			{
 				CatFilterEvents.loadCfg();
-				sender.sendMessage(CatBot.prefix + "Catbot reloaded. Meow.");
+				msgSender("Catbot reloaded. Meow.");
 				log.info(CatBot.cPrefix + "CatBot Reloaded by " + sender.getName() + ". Meow.");
 			}
 			else
 			{
-				sender.sendMessage(CatBot.prefix + "Hiss! (you do not have permission to do this!)");
+				msgSender("Hiss! (you do not have permission to do this!)");
 			}
 			break;
 			
 			
 		case "pet":
-			sender.sendMessage(CatBot.prefix +"Purr :3");
+			msgSender("Purr :3");
+			log.info(CatBot.cPrefix + "Purr :3");
 			break;
 			
 			
@@ -72,17 +74,18 @@ public class CommandGeneral implements CommandExecutor
 			 * args[3] is amount
 			 * args[4] is metadata
 			 */
+			Material mat = null;
 			
 			//Check for permission
 			if(!sender.hasPermission("catbot.redeem"))
 			{
-				sender.sendMessage(CatBot.prefix + "Hiss! (you do not have permission to do this!)");
+				msgSender("Hiss! (you do not have permission to do this!)");
 				return true;
 			}
 			//Check all required arguments are present
 			if(args.length < 3)
 			{
-				sender.sendMessage(CatBot.prefix + "Usage: /catbot redeem <player> <itemID> (amount) (meta)");
+				msgSender("Usage: /catbot redeem <player> <itemID> (amount) (meta)");
 				return true;
 			}
 			//Assign default values to metadata and amount
@@ -97,43 +100,47 @@ public class CommandGeneral implements CommandExecutor
 			//Make sure all numeric arguments are numeric
 			if (!StringUtils.isNumeric(newArgs[3] + newArgs[4]))
 			{
-				sender.sendMessage(CatBot.prefix + "Make sure your arguments are in the right order");
-				sender.sendMessage(CatBot.prefix + "Usage: /catbot redeem <player> <itemName> (amount) (meta)");
+				if(sender instanceof Player)
+				{
+					msgSender("Make sure your arguments are in the right order");
+					msgSender("Usage: /catbot redeem <player> <item> (amount) (meta)");
+				}
 				return true;
 			}
-			//Check that player is online(otherwise give won't work)
+			//Check that player is online(otherwise can't give items)
 			if (Bukkit.getPlayer(newArgs[1]) == null)
 			{
-				sender.sendMessage(CatBot.prefix + "Player " + newArgs[1] + " not found.");
+				msgSender("Player " + newArgs[1] + " not found.");
 				return true;
 			}
-			
 			//Make sure player has inv space
             p = Bukkit.getPlayer(newArgs[1]);
             if(p.getInventory().firstEmpty() == -1)
             {
-                sender.sendMessage(CatBot.prefix + "Player " + p.getName() + " has a full inventory.");
+            	msgSender("Player " + p.getName() + " has a full inventory.");
                 return true;
             }
-            
-            //Make sure item exists
-            if(Material.getMaterial(newArgs[2]) == null)
+            //Make sure item exists and find if server uses numeric ids
+            mat = Material.getMaterial(newArgs[2]);
+            if(StringUtils.isNumeric(newArgs[2]) && mat == null)
+            	mat = Material.getMaterial(Integer.parseInt(newArgs[2]));
+            if(mat == null)
             {
-                sender.sendMessage(CatBot.prefix + "That item (" + newArgs[2] + ") does not exist.");
-                return true;
+            	sender.sendMessage(CatBot.prefix + "That item (" + args[2] + ") does not exist.");
+            	return true;
             }
             
 			//Give permissions
 			perms.playerAdd(null, p, iresPrefix + "usage." + newArgs[2]);
 			perms.playerAdd(null, p, iresPrefix + "ownership." + newArgs[2]);
 			perms.playerAdd(null, p, iresPrefix + "equip." + newArgs[2]);
-
+			
 			//Give items
-			ItemStack i = new ItemStack(Material.getMaterial(newArgs[2]),Integer.parseInt(newArgs[3]),Short.parseShort((newArgs[4])));
+			ItemStack i = new ItemStack(mat,Integer.parseInt(newArgs[3]),Short.parseShort((newArgs[4])));
 			p.getInventory().addItem(i);
 			
 			//Tell sender (if player), reciever, and console
-			if (sender instanceof Player) sender.sendMessage(CatBot.prefix + "Giving " + newArgs[1] + " " + newArgs[3] + " of item " + newArgs[2] + ":" + newArgs[4] + ".");
+			msgSender("Giving " + newArgs[1] + " " + newArgs[3] + " of item " + newArgs[2] + ":" + newArgs[4] + ".");
 			p.sendMessage(CatBot.prefix + "You have receieved " + newArgs[3] + " of item " + newArgs[2] + ":" + newArgs[4] + ".");
 			log.info(CatBot.cPrefix + sender.getName() + " redeemed " + " " + newArgs[3] + " of item " + newArgs[2] + ":" + newArgs[4] + " to " + newArgs[1] + ".");
 			return true;
@@ -143,24 +150,24 @@ public class CommandGeneral implements CommandExecutor
 			//Check for permission
 			if(!sender.hasPermission("catbot.warn"))
 			{
-				sender.sendMessage(CatBot.prefix + "Hiss! (you do not have permission to do this!)");
+				msgSender("Hiss! (you do not have permission to do this!)");
 				return true;
 			}
 			//Check all required arguments are present
 			if(args.length < 2)
 			{
-				sender.sendMessage(CatBot.prefix + "Usage: /catbot warn <player>");
+				msgSender("Usage: /catbot warn <player>");
 				return true;
 			}
 			//Check that the player is online and send message
 			p = Bukkit.getPlayer(args[1]);
 			if (p == null)
 			{
-				sender.sendMessage(CatBot.prefix + "Player " + args[1] + " not found.");
+				msgSender("Player " + args[1] + " not found.");
 				return true;
 			}
 			p.sendMessage(CatBot.prefix + "Please mind your language, if you continue to bypass catbot you will be muted.");
-			sender.sendMessage(CatBot.prefix + "Warning " + args[1] + " about their language.");
+			msgSender("Warning " + args[1] + " about their language.");
 			log.info(CatBot.cPrefix + args[1] + " was warned by " + sender.getName() + ".");
 			return true;
 			
@@ -173,24 +180,24 @@ public class CommandGeneral implements CommandExecutor
 			//Check for permission
 			if(!sender.hasPermission("catbot.showtps"))
 			{
-				sender.sendMessage(CatBot.prefix + "Hiss! (you do not have permission to do this!)");
+				msgSender("Hiss! (you do not have permission to do this!)");
 				return true;
 			}
 			//Check all required arguments are present
 			if(args.length < 2)
 			{
-				sender.sendMessage(CatBot.prefix + "Usage: /catbot showtps <player>");
+				msgSender("Usage: /catbot showtps <player>");
 				return true;
 			}
 			//Check that the player is online and show tps
 			p = Bukkit.getPlayer(args[1]);
 			if (p == null)
 			{
-				sender.sendMessage(CatBot.prefix + "Player " + args[1] + " not found.");
+				msgSender("Player " + args[1] + " not found.");
 				return true;
 			}
 			p.performCommand("cofh tps");
-			sender.sendMessage(CatBot.prefix + "Showing " + args[1] + "the tps.");
+			msgSender("Showing " + args[1] + "the tps.");
 			return true;
 			
 		case "promote":
@@ -202,25 +209,25 @@ public class CommandGeneral implements CommandExecutor
             //Check for permissions, arg length, and correct args 
             if(!sender.hasPermission("catbot.promote"))
             {
-               sender.sendMessage(CatBot.prefix + "Hiss! (you do not have permission to do this!)");
+            	msgSender("Hiss! (you do not have permission to do this!)");
                return true;
             }
             else if(args.length < 3)
 			{
-			    sender.sendMessage(CatBot.prefix + "./catbot promote (player) (toGroup)");
+            	msgSender("./catbot promote (player) (toGroup)");
 			    return true;
 			}
 
 			p = Bukkit.getPlayerExact(args[1]);
 			if(p == null)
 	        {
-                sender.sendMessage(CatBot.prefix + "Player " + args[1] + " not found. Make sure to use " +
+				msgSender("Player " + args[1] + " not found. Make sure to use " +
                         "their exact name.");
                 return true;
             }
 			else if(!promoteGroups.contains(args[2]))
 			{
-			    p.sendMessage(CatBot.prefix + "Group " + args[2] + " does not exist or is not compatible with this command.");
+				msgSender("Group " + args[2] + " does not exist or is not compatible with this command.");
 			    log.info(CatBot.cPrefix + sender.getName() + " tried to promote " + p.getName() + " to group " + args[2] + " but " + 
 			                "the group did not exist or was not permitted.");
 			    return true;
@@ -229,12 +236,12 @@ public class CommandGeneral implements CommandExecutor
 			//Add to group, checking for error
 			if(!perms.playerAddGroup(null, p, args[2]))
 			{
-			    sender.sendMessage(CatBot.prefix + "Something went wrong!");
+				msgSender("Something went wrong!");
 			    log.warning(CatBot.cPrefix + "Error while adding player " + p.getName() + " to group " + args[2] + ".");
 			}
 			else
 			{
-			    if (sender instanceof Player) sender.sendMessage(CatBot.prefix + "Added player " + p.getName() + " to group " + args[2] + ".");
+				msgSender("Added player " + p.getName() + " to group " + args[2] + ".");
 			    log.info(CatBot.cPrefix + sender.getName() + " added player " + p.getName() + " to group " + args[2] + ".");
 			    p.sendMessage(CatBot.prefix + "Your rank has been changed to " + args[2] + ".");
 			}
@@ -243,7 +250,7 @@ public class CommandGeneral implements CommandExecutor
 		case "op":
 		    if(!sender.hasPermission("catbot.setop"))
 		    {
-		        sender.sendMessage(CatBot.prefix + "Hiss! (you do not have permission to do this!");
+		    	msgSender("Hiss! (you do not have permission to do this!");
 		       return true;
 		    }
 		    if(args.length < 2)
@@ -251,42 +258,47 @@ public class CommandGeneral implements CommandExecutor
 		        if(sender instanceof Player)
 		        {
 		            sender.setOp(true);
-		            sender.sendMessage(CatBot.prefix + "You have been opped.");
+		            msgSender("You have been opped.");
 		            log.info(CatBot.cPrefix + sender.getName() + " opped self.");
 		        }
 		        else
 		        {
-		            sender.sendMessage(CatBot.cPrefix + "Only players can be opped.");
+		            log.info(CatBot.cPrefix + "Only players can be opped.");
 		        }
 		        break;
 		    }
 		    p = Bukkit.getPlayerExact(args[1]);
 		    if(p == null)
 		    {
-		        sender.sendMessage(CatBot.prefix + "Player " + args[1] + " not found. Did you forget to use " +
+		    	msgSender("Player " + args[1] + " not found. Did you forget to use " +
 		                "their full exact name?");
 		        break;
 		    }
 		    else if(!p.hasPermission("catbot.getop"))
 		    {
-		        sender.sendMessage(CatBot.prefix + "You cannot op that player.");
+		    	msgSender("You cannot op that player.");
 		        log.info(CatBot.cPrefix + sender.getName() + " tried to op player " + args[1] + ", but they are "
 		                + "not allowed to be opped.");
 		        break;
 		    }
 		    else
 		    {
-		        sender.sendMessage(CatBot.prefix + "Opped " + p.getName() + ".");
+		    	msgSender("Opped " + p.getName() + ".");
 		        log.info(CatBot.cPrefix + sender.getName() + " opped " + p.getName() + ".");
 		        p.setOp(true);
 		    }
 		    return true;
 		   
 		default:
-			sender.sendMessage(CatBot.prefix + "Meow.");
+			msgSender("Meow.");
 			return false;
 		}
 		return true;
+	}
+	
+	void msgSender(String text)
+	{
+			sender.sendMessage(CatBot.prefix + text);
 	}
 	
 	static void loadCfg()

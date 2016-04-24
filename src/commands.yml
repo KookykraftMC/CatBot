@@ -3,6 +3,7 @@ Version: 4.4
 
 #List of commands to execute later. I wouldn't recommend manually editting this
 #but if you really really really want to it probably wouldn't be hard.
+#Changes may be overwritten at any time and ignored, so probably don't.
 StoredCommands:
     0:
         PlayerName: CatBot

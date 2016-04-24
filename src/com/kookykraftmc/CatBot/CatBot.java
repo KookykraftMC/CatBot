@@ -77,10 +77,8 @@ public class CatBot extends JavaPlugin
         this.getCommand("findname").setExecutor(new CommandFindName());
         this.getCommand("catbot").setExecutor(new CommandGeneral(this));
         log.info(cPrefix + "Commands Enabled.");
-
+        ScheduledCommand.enable(this);
 		log.info(pdf.getName() + " " + pdf.getVersion() + " is now enabled.");
-		
-		
 	}
 
 	public void onDisable()

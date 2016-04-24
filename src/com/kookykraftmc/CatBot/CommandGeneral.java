@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.permission.Permission;
 
 public class CommandGeneral implements CommandExecutor
@@ -24,12 +25,14 @@ public class CommandGeneral implements CommandExecutor
 	static List<String> promoteGroups = new Vector<String>();
 	static Logger log = CatBot.log;
 	static Permission perms;
+	static Chat chat;
 	private CommandSender sender;
 	
 	CommandGeneral(CatBot catBot)
 	{
 	    plugin = catBot;
 	    perms = catBot.rspPerms.getProvider();
+	    chat = catBot.rspChat.getProvider();
 	    loadCfg();
 	}
 
@@ -140,7 +143,7 @@ public class CommandGeneral implements CommandExecutor
 			p.getInventory().addItem(i);
 			
 			//Tell sender (if player), reciever, and console
-			msgSender("Giving " + newArgs[1] + " " + newArgs[3] + " of item " + newArgs[2] + ":" + newArgs[4] + ".");
+			if (sender instanceof Player) msgSender("Giving " + newArgs[1] + " " + newArgs[3] + " of item " + newArgs[2] + ":" + newArgs[4] + ".");
 			p.sendMessage(CatBot.prefix + "You have receieved " + newArgs[3] + " of item " + newArgs[2] + ":" + newArgs[4] + ".");
 			log.info(CatBot.cPrefix + sender.getName() + " redeemed " + " " + newArgs[3] + " of item " + newArgs[2] + ":" + newArgs[4] + " to " + newArgs[1] + ".");
 			return true;
@@ -228,8 +231,8 @@ public class CommandGeneral implements CommandExecutor
 			else if(!promoteGroups.contains(args[2]))
 			{
 				msgSender("Group " + args[2] + " does not exist or is not compatible with this command.");
-			    log.info(CatBot.cPrefix + sender.getName() + " tried to promote " + p.getName() + " to group " + args[2] + " but " + 
-			                "the group did not exist or was not permitted.");
+			    log.info(CatBot.cPrefix + sender.getName() + " tried to promote " + p.getName() + " to group " 
+			                + args[2] + " but " + "the group did not exist or was not permitted.");
 			    return true;
 			}
 			
@@ -288,11 +291,54 @@ public class CommandGeneral implements CommandExecutor
 		        p.setOp(true);
 		    }
 		    return true;
-		   
+		case "prefix":
+		    if(!sender.hasPermission("catbot.changeprefix"))
+	          {
+                msgSender("Hiss! (you do not have permission to do this!");
+               return true;
+            }
+		    else if (args.length < 3)
+		    {
+		        msgSender("Usage: /catbot prefix (player) (prefix)");
+		        return true;
+		    }
+		    p = Bukkit.getPlayer(args[1]);
+		    if(p == null)
+		    {
+		        msgSender("Player " + args[1] + " not found.");
+		        return true;
+		    }
+		    if(args[2].equals("\"\"")||args[2].equals("off"))
+		    {
+		        chat.setPlayerPrefix(null, p, null);
+		        if(sender instanceof Player) msgSender("Removed " + p.getName() + "'s prefix.");
+		        log.info(CatBot.cPrefix + sender.getName() + " removed " + p.getName() + "'s prefix.");
+		        return true;
+		    }
+		    else
+		    {
+    		    chat.setPlayerPrefix(null, p, args[2]);
+    		    if(sender instanceof Player) msgSender("Changed " + p.getName() + "'s prefix to "
+    		                + chat.getPlayerPrefix(p));
+    		    log.info(CatBot.cPrefix + sender.getName() + " changed " + p.getName() + "'s prefix to " + chat.getPlayerPrefix(p));
+		    }
+		    break;
+		case "rmvip":
+	          if(!sender.hasPermission("catbot.removevip"))
+              {
+                msgSender("Hiss! (you do not have permission to do this!");
+               return true;
+              }
+	          else if(args.length < 2)
+	          {
+	              msgSender("Usage: /catbot rmvip (player)");
+	          }
+	          break;
 		default:
 			msgSender("Meow.");
 			return false;
 		}
+		sender = null;
 		return true;
 	}
 	

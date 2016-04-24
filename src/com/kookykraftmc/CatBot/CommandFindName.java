@@ -50,8 +50,6 @@ public class CommandFindName implements CommandExecutor
 					msg = "Item with ID " + args[0] + " is \"" + itemName + "\"";
 				}
 		}
-CommandSender a = (CommandSender) Bukkit.getOfflinePlayer("Kraise_");
-a.sendMessage("Hi");
 
 		if(isPlayer)
 		{

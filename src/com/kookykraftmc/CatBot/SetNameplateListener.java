@@ -8,7 +8,6 @@ import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -47,7 +46,6 @@ public class SetNameplateListener implements Listener
 	public void onJoin(PlayerJoinEvent e)
 	{
 		Player p = e.getPlayer();
-		OfflinePlayer offPlayer = Bukkit.getOfflinePlayer(p.getUniqueId());
 		String name = p.getName();
 		//Warn if player has no prefix/group because that's pretty strange
 		if((permsInfo.getPlayerGroups(p).length==0)||chatInfo.getPlayerPrefix(p).isEmpty())
@@ -55,46 +53,41 @@ public class SetNameplateListener implements Listener
 			log.warning(CatBot.prefix + name + " had no prefix and/or group!");
 			return;
 		}
-		
-		//Get player's prefix, without colours or []
-		String pPrefix = chatInfo.getPlayerPrefix(p);
-		pPrefix = pPrefix.replace("[", "").replace("]", "").toLowerCase();
-		if(pPrefix.contains("&"))
-		    pPrefix = pPrefix.substring(2);
-		/*if(pPrefix.contains("helper"))
-			pPrefix = "helper";
-		else if(pPrefix.contains("developer"))
-			pPrefix = "developer";
-		*/
+
 		//Reset player's scoreboard just in case
 		board.resetScores(p);
 		p.setScoreboard(board);
 		
 		//Iterate through player's groups to find one with highest priority
-		int i;
-		int prefIndex = groupList.indexOf(pPrefix);
-		int groupIndex = -1;
+		int pIndex = -1;
 		if(permsInfo.getPlayerGroups(p).length > 0)
 			for(String g:permsInfo.getPlayerGroups(p))
 			{
-				i = groupList.indexOf(g);
-				groupIndex = i>groupIndex?i:groupIndex;
+				int i = groupList.indexOf(g);
+				pIndex = i>pIndex?i:pIndex;
 			}
-		i = groupIndex<prefIndex?prefIndex:groupIndex;
+
+		//Now iterate through prefixes
+		String pPrefix = chatInfo.getPlayerPrefix(p);
+		for(String grp:groupList)
+		{
+		    int i = groupList.indexOf(grp);
+		    if(pPrefix.toLowerCase().contains(grp.toLowerCase())&&i>pIndex)
+		        pIndex = groupList.indexOf(grp);
+		}
 		
 		//Set player's prefix as long as they have one
-		if(i!=-1)
+		if(pIndex!=-1)
 		{
-			groups[i].addPlayer(offPlayer);
-			log.info(CatBot.cPrefix + "Assigning [" + groups[i].getName() + "] tag to " + name + ".");
+			groups[pIndex].addPlayer(p);
+			log.info(CatBot.cPrefix + "Assigning [" + groups[pIndex].getName() + "] tag to " + name + ".");
 		}
 		else
 		{
-			cat.addPlayer(offPlayer);
+			cat.addPlayer(p);
 			log.info(CatBot.cPrefix + "Assigning [Cat] (default) tag to " + name + ".");
 		}
 	}
-
 
 	public static void loadCfg()
 	{

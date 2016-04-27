@@ -10,3 +10,5 @@
 bin/
 bin/config.yml
 bin/plugin.yml
+.idea/
+CatBot.iml

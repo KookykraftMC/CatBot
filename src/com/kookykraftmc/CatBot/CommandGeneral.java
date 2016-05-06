@@ -200,7 +200,7 @@ public class CommandGeneral implements CommandExecutor
 				return true;
 			}
 			p.performCommand("cofh tps");
-			msgSender("Showing " + args[1] + "the tps.");
+			msgSender("Showing " + args[1] + " the tps.");
 			return true;
 			
 		case "promote":

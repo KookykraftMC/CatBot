@@ -1,4 +1,4 @@
-package com.kookykraftmc.CatBot;
+package com.kookykraftmc.catbot.listeners;
 
 import java.util.List;
 import java.util.Random;
@@ -9,15 +9,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import com.kookykraftmc.catbot.CatBot;
+
 
 public class CatFilterEvents implements Listener 
 {
+	final static public Random rdm = new Random();
+	final static Logger log = CatBot.log;
 	static public CatBot plugin;
 	static public List<String> badWords;
 	static public String denyMsg;
-	static public Random rdm = new Random();
 	static public List<String> replaceWords;
-	static Logger log = CatBot.log;
 	
 	public CatFilterEvents(CatBot catBot)
 	{

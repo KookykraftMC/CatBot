@@ -1,4 +1,4 @@
-package com.kookykraftmc.CatBot;
+package com.kookykraftmc.catbot.commands;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -6,10 +6,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -17,17 +17,23 @@ import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import com.kookykraftmc.catbot.CatBot;
+
 public class ScheduledCommand
 {
+    final static SimpleDateFormat df = CatBot.dateFormat;
+    final static List<ScheduledCommand> commands = new Vector<ScheduledCommand>();
+    final static Logger log = CatBot.log;
+    final static String SECTION_NAME = "Commands";
+    final static int fileCmdsLimit = 1000;
+
     static FileConfiguration cmdsCfg;
     static File cmdsFile;
-    static Logger log = CatBot.log;
     static CatBot plugin;
-    static SimpleDateFormat df = CatBot.dateFormat;
-    static List<ScheduledCommand> commands = new Vector<ScheduledCommand>();
 
 	UUID targetID;
 	String[] args;
@@ -37,9 +43,12 @@ public class ScheduledCommand
 	static void enable(CatBot cb)
 	{
 	    plugin = cb;
-	}
-	
+	}	
+
+
 	/**
+	 * Invoked when a command is
+	 * first scheduled by a player
 	 * 
 	 * @param cmd Command sent
 	 * @param cmdSender Command sender
@@ -48,6 +57,15 @@ public class ScheduledCommand
 	 */
 	ScheduledCommand(String[] cmd, CommandSender cmdSender)
 	{
+		//Ensure there are not too many commands
+		if(commands.size() >= fileCmdsLimit)
+		{
+			log.severe(CatBot.cPrefix + "Too many commands have been created (over " + fileCmdsLimit + "). Please"
+					+ " check fild and possibly reload commands if you know what you're doing.");
+			cmdSender.sendMessage(CatBot.prefix + "Command could not be created, there were too many in"
+					+ "file. Ask a Senior Admin to try and do something.");
+			throw new IllegalArgumentException("Eror scheduling command: Command limit (" + fileCmdsLimit + ") reached.");
+		}
 		//Check for the millionth time that they have correct args
 		if(args.length < 3)
 		{
@@ -70,19 +88,73 @@ public class ScheduledCommand
 		timeSent = new Date();
 		args = cmd;
 	}
-	
-	ScheduledCommand(int i)
+
+
+	/**
+	 * Invoke to read command i from
+	 * file on server startup
+	 * 
+	 * @param id ID of command
+	 */
+	ScheduledCommand(String i)
 	{
+		ConfigurationSection section = cmdsCfg.getConfigurationSection(SECTION_NAME + "." + i);
+		targetID = UUID.fromString(section.getString("Sender"));
+		args = section.getString("Command").split("\\b");
+		sender = section.getString("Sender");
 		
-		/*Check for the billionth time that they have correct args
-		if(cmdSplit.length < 3)
-		{
-			throw new IllegalArgumentException("Stored command did not have enough arguments. This error "
-					+ "should never be seen.");
+		//Make sure there are no errors parsing date
+		try {
+			timeSent = df.parse(section.getString("TimeSent"));
+		} catch (ParseException e) {
+			log.severe(CatBot.cPrefix + "Date was stored wrongly in file! Will be reset to the epoch. "
+					+ "Command should still work fine, but here is the error.");
+			timeSent = new Date(0L);
+			e.printStackTrace();
 		}
-		*/
 	}
-	
+
+
+	/**
+	 * Read all commands from file, and
+	 * add to the commands list.
+	 * Will not preserve ID because there
+	 * is no need to.
+	 */
+	public static void readAllCmds()
+	{
+		/*int counter = 0;
+		for(String id:cmdsCfg.getKeys(false))
+		{
+			commands.add(new ScheduledCommand(id));
+			counter++;
+		}
+		log.info(CatBot.cPrefix + "Loaded " + counter + " commands from file.");
+		*/
+		//Commenting out for now so this can be left in without affecting anything else while I work on it
+	}
+
+
+	/**
+	 * Add this command to
+	 * configuration, ready
+	 * to save.
+	 */
+	public void addToCfg()
+	{
+		final String sectionName = SECTION_NAME + "." + String.valueOf(commands.indexOf(this));
+		final ConfigurationSection section = cmdsCfg.createSection(sectionName);
+		String saveCommand = "";
+		for(String s:args)
+			saveCommand += s + " ";
+		
+		section.set("Target", targetID.toString());
+		section.set("TimeSent", df.format(timeSent));
+		section.set("Sender", sender);
+		section.set("Command", saveCommand);
+	}
+
+
     /**
      * Copy contents of InputStream
      * into file
@@ -108,7 +180,9 @@ public class ScheduledCommand
     }
 
    /**
-    * Save default commands.yml file
+    * Save default commands.yml file.
+    * Should only be used if commands.yml
+    * doesn't exist.
     */
     public static void copyDefault()
     {
@@ -120,11 +194,10 @@ public class ScheduledCommand
     }
 
     /**
-     * save current commands to
+     * Save current commands to
      * commands.yml
-     * Will overwrite contents
+     * Will probably overwrite contents
      * of file.
-     * 
      */
     public static void saveCmds()
     {
@@ -140,97 +213,37 @@ public class ScheduledCommand
      * Load all commands from
      * commands.yml
      */
-    public static void loadCmds()
+    public static boolean loadCmdsFile()
     {
             try {
                 cmdsCfg.load(cmdsFile);
             } catch (FileNotFoundException e) {
                 log.severe(CatBot.cPrefix + "Error finding commands file!");
                 e.printStackTrace();
+                return false;
             } catch (IOException e) {
                 log.severe(CatBot.cPrefix + "Error loading commands file!");
                 e.printStackTrace();
+                return false;
             } catch (InvalidConfigurationException e) {
                 log.severe(CatBot.cPrefix + "Error reading commands file!");
                 e.printStackTrace();
+                return false;
             }
+            readAllCmds();
+            return true;
     }
 
-
-    public List<String> readCmds()
-    {
-        return null;
-/////////////////////////////////////////////////////Do this!
-    }
-
-    /**
-     * Create a command. Might
-     * remove this eventually
-     * 
-     * @param cmd Command to schedule
-     * @param sender Sender of command
-     * @param target Player command should
-     *          activate on
-     * 
-     * @return Successful?
-     */
-    @SuppressWarnings("deprecation")
-    public boolean createCmd(String cmd, CommandSender sender, String target) //done
-    {
-        //Find next available index to save command
-        Set<String> existingIndices = cmdsCfg.getConfigurationSection("Commands").getKeys(false);
-        boolean isFull = true;
-        String index = null;
-        OfflinePlayer targetPlayer;
-
-        for(int i = 0;i<1000;i++)
-        {
-            if(!existingIndices.contains(String.valueOf(i)))
-            {
-                isFull = false;
-                index = String.valueOf(i);
-                break;
-            }
-        }
-        if(isFull||index == null)
-        {
-            log.warning(CatBot.cPrefix + "Command store is full (contains 1000+ entries)! Please check file.");
-            return false;
-        }
-        
-        //Get target player from command
-        String[] cmdArgs = cmd.split("\\b");
-        if(cmdArgs.length<3)
-        {
-            sender.sendMessage(CatBot.prefix + "Definitely not enough args in command");
-            return false;
-        }
-        else
-        {
-            targetPlayer = Bukkit.getOfflinePlayer(cmdArgs[2]);
-            if(!Bukkit.getOfflinePlayer(cmdArgs[2]).hasPlayedBefore())
-                sender.sendMessage(CatBot.prefix + "That player has never joined the server before! Command will " + 
-                        "still be saved, but make sure you've checked the name.");
-        }
-        
-        //Save command to file
-        cmdsCfg.set("Commands." + index + ".PlayerName", targetPlayer);
-        cmdsCfg.set("Commands." + index + ".Sender", sender.getName());
-        cmdsCfg.set("Commands." + index + ".Command", cmd);
-        cmdsCfg.set("Commands." + index + ".DateSent", df.format(new Date()));
-        //commands.add(new ScheduledCommand(targetPlayer, sender);
-        return true;
-    }
     
 
-    /**
+    /*
      * Perform command at index
      * (if possible)
      * 
      * @param index Command to send
      * @return Successful?
-     */
-    public boolean sendCmd(String index) //done
+     
+    public boolean sendCmd(String index)
     {
         //Make sure it exists
         if(cmdsCfg.getConfigurationSection(index) == null)
@@ -249,7 +262,7 @@ public class ScheduledCommand
      * @param index Command to remove
      * 
      * @return Success?
-     */
+     
     public boolean removeCmd(String index) //done
     {
         if(cmdsCfg.getConfigurationSection("Commands." + index) == null)
@@ -262,13 +275,13 @@ public class ScheduledCommand
     /**
      * Deletes all scheduled commands
      * Use with caution!
-     */
-    public static void purgeCmds() //done
+     
+    public static void purgeCmds()
     {
         cmdsCfg.set("Commands", null);
         for(ScheduledCommand cmd:commands)
             commands.remove(cmd);
         cmdsCfg.createSection("Commands");
     }
-
+*/
 }

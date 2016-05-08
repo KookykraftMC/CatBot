@@ -1,4 +1,4 @@
-package com.kookykraftmc.CatBot;
+package com.kookykraftmc.catbot;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -10,15 +10,21 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.kookykraftmc.catbot.commands.CommandFindName;
+import com.kookykraftmc.catbot.commands.CommandGeneral;
+import com.kookykraftmc.catbot.listeners.CatFilterEvents;
+import com.kookykraftmc.catbot.listeners.SetNameplateListener;
+
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.permission.Permission;
 
 public class CatBot extends JavaPlugin
 {
-	public static String prefix = ChatColor.DARK_RED + "[Bot]+" + ChatColor.LIGHT_PURPLE + "CatBot" + ChatColor.WHITE + ": " + ChatColor.BLUE;
-	public static String cPrefix = "[CatBot]";
-	static Logger log = Logger.getLogger("CatBot");
-	static SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+	final public static String prefix = ChatColor.DARK_RED + "[Bot]+" + ChatColor.LIGHT_PURPLE + "CatBot" + ChatColor.WHITE + ": " + ChatColor.BLUE;
+	final public static String cPrefix = "[CatBot]";
+	final static Logger log = Logger.getLogger("CatBot");
+	final static SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+
 	RegisteredServiceProvider<Permission> rspPerms;
     RegisteredServiceProvider<Chat> rspChat;
     File cmdsFile;
@@ -77,7 +83,7 @@ public class CatBot extends JavaPlugin
         this.getCommand("findname").setExecutor(new CommandFindName());
         this.getCommand("catbot").setExecutor(new CommandGeneral(this));
         log.info(cPrefix + "Commands Enabled.");
-        ScheduledCommand.enable(this);
+        //ScheduledCommand.enable(this);
 		log.info(pdf.getName() + " " + pdf.getVersion() + " is now enabled.");
 	}
 

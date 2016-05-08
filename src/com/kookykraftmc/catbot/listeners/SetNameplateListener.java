@@ -1,4 +1,4 @@
-package com.kookykraftmc.CatBot;
+package com.kookykraftmc.catbot.listeners;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -16,12 +16,14 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
+import com.kookykraftmc.catbot.CatBot;
+
 public class SetNameplateListener implements Listener
 {
+	final static Logger log = Bukkit.getServer().getLogger();
+    final static ScoreboardManager boardManager = Bukkit.getScoreboardManager();	
 	static CatBot plugin;
 	static List<String> groupList;
-	static final Logger log = Bukkit.getServer().getLogger();
-    static ScoreboardManager boardManager = Bukkit.getScoreboardManager();
     static Scoreboard board;
     static Team[] groups;
     static Team cat;

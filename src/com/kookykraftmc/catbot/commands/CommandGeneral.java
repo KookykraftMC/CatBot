@@ -1,4 +1,4 @@
-package com.kookykraftmc.CatBot;
+package com.kookykraftmc.catbot.commands;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,24 +11,27 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+
+import com.kookykraftmc.catbot.CatBot;
 
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.permission.Permission;
 
 public class CommandGeneral implements CommandExecutor
 {
+	final static String IRES_PREFIX = "itemrestrict.bypass.";
+	final static List<String> promoteGroups = new Vector<String>();
 	static Plugin plugin;
-	static String iresPrefix = "itemrestrict.bypass.";
-	static List<String> promoteGroups = new Vector<String>();
 	static Logger log = CatBot.log;
 	static Permission perms;
 	static Chat chat;
 	private CommandSender sender;
 	
-	CommandGeneral(CatBot catBot)
+	public CommandGeneral(CatBot catBot)
 	{
 	    plugin = catBot;
 	    perms = catBot.rspPerms.getProvider();
@@ -52,7 +55,7 @@ public class CommandGeneral implements CommandExecutor
 		case "reload":
 			if (sender.hasPermission("catbot.reload"))
 			{
-				CatFilterEvents.loadCfg();
+				plugin.reloadConfig();
 				msgSender("Catbot reloaded. Meow.");
 				log.info(CatBot.cPrefix + "CatBot Reloaded by " + sender.getName() + ". Meow.");
 			}
@@ -134,9 +137,9 @@ public class CommandGeneral implements CommandExecutor
             }
             
 			//Give permissions
-			perms.playerAdd(null, p, iresPrefix + "usage." + newArgs[2]);
-			perms.playerAdd(null, p, iresPrefix + "ownership." + newArgs[2]);
-			perms.playerAdd(null, p, iresPrefix + "equip." + newArgs[2]);
+			perms.playerAdd(null, p, IRES_PREFIX + "usage." + newArgs[2]);
+			perms.playerAdd(null, p, IRES_PREFIX + "ownership." + newArgs[2]);
+			perms.playerAdd(null, p, IRES_PREFIX + "equip." + newArgs[2]);
 			
 			//Give items
 			ItemStack i = new ItemStack(mat,Integer.parseInt(newArgs[3]),Short.parseShort((newArgs[4])));
@@ -344,10 +347,11 @@ public class CommandGeneral implements CommandExecutor
 	
 	void msgSender(String text)
 	{
+		if(sender instanceof Player||sender instanceof ConsoleCommandSender)
 			sender.sendMessage(CatBot.prefix + text);
 	}
 	
-	static void loadCfg()
+	public static void loadCfg()
 	{
 	    List<String> promoteGroupsCfg = plugin.getConfig().getStringList("AllowedGroups");
 	    for(int i = 0;i<promoteGroupsCfg.size();i++)
@@ -360,7 +364,7 @@ public class CommandGeneral implements CommandExecutor
 	    //Check that groups from config exist to avoid problems later
 	    for(String grp:promoteGroupsCfg)
 	        if(!existingGroups.contains(grp))
-	            log.warning(CatBot.cPrefix + "Group \"" + grp + "\" was declared in config but cannot be found. Will be ignored.");
+	            log.warning(CatBot.cPrefix + "Group " + grp + " was declared in config but cannot be found. Will be ignored.");
 	        else
 	            promoteGroups.add(grp);
 	}

@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,19 +21,17 @@ public class CatBot extends JavaPlugin
 {
 	final public static String prefix = ChatColor.DARK_RED + "[Bot]+" + ChatColor.LIGHT_PURPLE + "CatBot" + ChatColor.WHITE + ": " + ChatColor.BLUE;
 	final public static String cPrefix = "[CatBot]";
-	final static Logger log = Logger.getLogger("CatBot");
-	final static SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+	public final static Logger log = Logger.getLogger("CatBot");
+	public final static SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
 
-	RegisteredServiceProvider<Permission> rspPerms;
-    RegisteredServiceProvider<Chat> rspChat;
-    File cmdsFile;
-    FileConfiguration cmds;
+	public RegisteredServiceProvider<Permission> rspPerms;
+    public RegisteredServiceProvider<Chat> rspChat;
 
-	public void onEnable() 
+
+	public void onEnable()
 	{
 	    rspPerms = this.getServer().getServicesManager().getRegistration(Permission.class);
 	    rspChat = this.getServer().getServicesManager().getRegistration(Chat.class);
-	    cmdsFile = new File(getDataFolder(), "commands.yml");
 		PluginDescriptionFile pdf = getDescription();
 		File cfg = new File(getDataFolder(), "config.yml");
 

@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.kookykraftmc.catbot.commands.CommandFindName;
 import com.kookykraftmc.catbot.commands.CommandGeneral;
+import com.kookykraftmc.catbot.commands.CommandRTP;
 import com.kookykraftmc.catbot.listeners.CatFilterEvents;
 import com.kookykraftmc.catbot.listeners.SetNameplateListener;
 
@@ -79,6 +80,7 @@ public class CatBot extends JavaPlugin
 
         this.getCommand("findname").setExecutor(new CommandFindName());
         this.getCommand("catbot").setExecutor(new CommandGeneral(this));
+        this.getCommand("rtp").setExecutor(new CommandRTP(this));
         log.info(cPrefix + "Commands Enabled.");
         //ScheduledCommand.enable(this);
 		log.info(pdf.getName() + " " + pdf.getVersion() + " is now enabled.");

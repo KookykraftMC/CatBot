@@ -1,4 +1,4 @@
-main: com.kookykraftmc.CatBot.CatBot
+main: com.kookykraftmc.catbot.CatBot
 name: CatBot
 version: 4.4
 authors: [Time6628, Kraise_]
@@ -12,3 +12,7 @@ commands:
   findname:
     description: Find material names of items
     usage: /findname id|hand
+  rtp:
+    description: Teleport to a random location
+    usage: /rtp
+    aliases: [rtp, randomtp, randomteleport, wild, getmeawayfromherepls]

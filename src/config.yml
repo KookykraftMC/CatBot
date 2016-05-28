@@ -1,8 +1,12 @@
 #Do not change this, this is the option that resets outdated config
-Version: 4.4
+Version: 4.5
 
 #Msg shown when people say bad things
 DenyMsg: "We do not allow that kind of language! Sorry!"
+
+#Worlds that should be reset on every restart, exactly as they appear in the world directory
+ResetWorlds:
+  - "DIM1"
 
 #Make sure this is properly formatted regex
 #Do not edit unless you know what you're doing
@@ -10,7 +14,7 @@ DenyMsg: "We do not allow that kind of language! Sorry!"
 #Jk, ily Java
 #Leave blank to disable chat filter
 BadWords:
-  - "\\bl(a|@)g+(y|ing)?\\b"
+  - "\\bl(a|@)g+(y|ing|s)?\\b"
   - "dick"
   - "fuck"
   - "\\b(bull)?shitt?(ing|y)?\\b"
@@ -59,6 +63,7 @@ GroupColours:
   - "UltimateKat,u"
   - "Builder,3"
   - "Developer,b"
+  - "Assistant,b"
   - "Helper,b"
   - "Mod,c"
   - "Admin,4"

@@ -1,10 +1,13 @@
 package com.kookykraftmc.catbot;
 
 import java.io.File;
+
 import java.text.SimpleDateFormat;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -50,13 +53,6 @@ public class CatBot extends JavaPlugin
         {
             log.info(cPrefix + "Loading config.");
         }
-        
-        /*if(!cmdsFile.exists())
-    	{
-        	
-        	FileManager.copyDefault();
-    	}
-		*/
 
         if(getConfig().getStringList("BadWords").isEmpty()||getConfig().getStringList("ReplaceWords").isEmpty())
         {
@@ -82,15 +78,46 @@ public class CatBot extends JavaPlugin
         this.getCommand("catbot").setExecutor(new CommandGeneral(this));
         this.getCommand("rtp").setExecutor(new CommandRTP(this));
         log.info(cPrefix + "Commands Enabled.");
+        
+        if(Bukkit.getServer().getOnlinePlayers().size() > 0)
+        {
+            for(Player p:Bukkit.getServer().getOnlinePlayers())
+            {
+                SetNameplateListener.assignPlate(p);
+            }
+        }
         //ScheduledCommand.enable(this);
 		log.info(pdf.getName() + " " + pdf.getVersion() + " is now enabled.");
 	}
 
 	public void onDisable()
 	{
-		SetNameplateListener.clearTeams();
-		PluginDescriptionFile pdf = getDescription();
-		log.info(pdf.getName() + pdf.getVersion() + " is now disabled");
+	    /* This doesn't work yet, as worlds are saved after plugins disable :(
+	     * 
+	     * 		if(!getConfig().getStringList("ResetWorlds").isEmpty())
+		{
+		    File serverDir = this.getServer().getWorldContainer();
+		    log.info(serverDir.getAbsolutePath().subSequence(0, (int) (serverDir.getAbsolutePath().length() - 2)) + File.separator + "world" + File.separator + "DIM1");
+		    for(String world:getConfig().getStringList("ResetWorlds"))
+                deleteDir(new File(serverDir.getAbsolutePath().subSequence(0, (int) (serverDir.getAbsolutePath().length() - 2)) + File.separator + "world" + File.separator + world));
+		}
+		*/
+	    SetNameplateListener.clearTeams();
+	    PluginDescriptionFile pdf = getDescription();
+	    log.info(pdf.getName() + pdf.getVersion() + " is now disabled");
+	}
+	
+	public static void deleteDir(File element)
+	{
+	    if (element.isDirectory())
+	    {
+	        for (File sub : element.listFiles())
+	        {
+	            //recursion :(
+	            deleteDir(sub);
+	        }
+	    }
+	    element.delete();
 	}
 
 	public void reloadCfg()

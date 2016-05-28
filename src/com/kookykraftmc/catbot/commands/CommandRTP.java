@@ -96,81 +96,76 @@ public class CommandRTP implements CommandExecutor
 	
 	private boolean rtp(final Player p)
 	{
-        final World w = p.getLocation().getWorld();
-        final int max = w.getMaxHeight();
-        final String name = p.getName();
-        boolean locationDone = false;
-
-        int counter = 0;
-        while (!locationDone)
-        {
-            if(++counter > maxTries)
+	    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
+            @Override
+            public void run()
             {
-                p.sendMessage(CatBot.prefix + "Couldn't find a safe place to teleport to :( please contact staff, preferably Kraise.");
-                log.severe(CatBot.cPrefix + "Could not find a place to RTP " + name + ". This is a big problem, tell someone!");
-                log.info(CatBot.cPrefix + name + " is at " + p.getLocation().toString());
-                return false;
-            }
-            final Location loc = new Location(w, (rdm.nextDouble() - 0.5 ) * 2 * BORDER, max, (rdm.nextDouble() - 0.5 ) * 2 * BORDER);
-            if(biomeBlacklist.contains(loc.getBlock().getBiome()))
-                continue;
+                final World w = p.getLocation().getWorld();
+                final int max = w.getMaxHeight();
+                final String name = p.getName();
+                boolean locationDone = false;
 
-            //Try to find a surface to land on
-            for(int i = max - 1;i > 0;i--)
-            {
-                loc.setY(i);
-                if(!allowedLandingBlocks.contains(loc.getBlock().getType()))
-                    continue;
-
-                Location checkLoc = loc.clone();
-                boolean isOk = true;
-                for(;checkLoc.getY() < loc.getY() + 3;checkLoc.setY(checkLoc.getY() + 1));
-                    if(!checkLoc.getBlock().getType().equals(Material.AIR))
-                            isOk = false;
-                if(!isOk)
-                    continue;
-                    
-                int safeNum = 0;
-                for(double x = -safeZoneRadius;x<=safeZoneRadius;x++)
+                int counter = 0;
+                while (!locationDone)
                 {
-                    for(double z = -safeZoneRadius; z<=safeZoneRadius; z++)
+                    if(++counter > maxTries)
                     {
-                        for(double y = 0; y <= safeZoneHeight; y++)
-                        {
-                            checkLoc.setX(loc.getX() + x);
-                            checkLoc.setY(loc.getY() + y);
-                            checkLoc.setZ(loc.getZ() + z);
-                            if(checkLoc.getBlock().getType().equals(Material.AIR))
-                                safeNum++;
-                        }
+                        p.sendMessage(CatBot.prefix + "Couldn't find a safe place to teleport to :( please contact staff, preferably Kraise.");
+                        log.severe(CatBot.cPrefix + "Could not find a place to RTP " + name + ". This is a big problem, tell someone!");
+                        log.info(CatBot.cPrefix + name + " is at " + p.getLocation().toString());
+                        return;
                     }
-                }
-                if(safeNum < 0.75 * safeZoneRadius * safeZoneRadius * safeZoneHeight)
-                    continue;
-                else
-                {
-                	locationDone = true;
-                	break;
-                }
-                
-            }
-            log.info(CatBot.cPrefix + "Successfully RTPing " + name + " in world " + loc.getWorld().getName() + 
-            		" at position " + loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ() + " (x,y,z).");
-            loc.setY(loc.getY() + 2.0);
-            p.teleport(loc);
+                    final Location loc = new Location(w, (rdm.nextDouble() - 0.5 ) * 2 * BORDER, max, (rdm.nextDouble() - 0.5 ) * 2 * BORDER);
+                    if(biomeBlacklist.contains(loc.getBlock().getBiome()))
+                        continue;
 
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
-            {
-				@Override
-				public void run()
-				{
-					p.teleport(loc);
-				}
-            	
-            }, 10L);
-            return true;
-        }
-		return false;
+                    //Try to find a surface to land on
+                    for(int i = max - 150;i > 0;i--)
+                    {
+                        loc.setY(i);
+                        if(!allowedLandingBlocks.contains(loc.getBlock().getType()))
+                            continue;
+
+                        Location checkLoc = loc.clone();
+                        boolean isOk = true;
+                        for(;checkLoc.getY() < loc.getY() + 3;checkLoc.setY(checkLoc.getY() + 1));
+                            if(!checkLoc.getBlock().getType().equals(Material.AIR))
+                                    isOk = false;
+                        if(!isOk)
+                            continue;
+                            
+                        int safeNum = 0;
+                        for(double x = -safeZoneRadius;x<=safeZoneRadius;x++)
+                        {
+                            for(double z = -safeZoneRadius; z<=safeZoneRadius; z++)
+                            {
+                                for(double y = 0; y <= safeZoneHeight; y++)
+                                {
+                                    checkLoc.setX(loc.getX() + x);
+                                    checkLoc.setY(loc.getY() + y);
+                                    checkLoc.setZ(loc.getZ() + z);
+                                    if(checkLoc.getBlock().getType().equals(Material.AIR))
+                                        safeNum++;
+                                }
+                            }
+                        }
+                        if(safeNum < 0.75 * safeZoneRadius * safeZoneRadius * safeZoneHeight)
+                            continue;
+                        else
+                        {
+                            locationDone = true;
+                            break;
+                        }
+                        
+                    }
+                    log.info(CatBot.cPrefix + "Successfully RTPing " + name + " in world " + loc.getWorld().getName() + 
+                            " at position " + loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ() + " (x,y,z).");
+                    loc.setY(loc.getY() + 2.0);
+                    p.teleport(loc);
+                }
+            }
+	    });
+		return true;
 	}
 
 }

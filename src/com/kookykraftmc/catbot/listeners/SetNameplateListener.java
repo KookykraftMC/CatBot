@@ -29,8 +29,8 @@ public class SetNameplateListener implements Listener
     static Team cat;
     static Team senioradmin;
     static Team ultimatekat;
-	Permission permsInfo;
-	Chat chatInfo;
+	static Permission permsInfo;
+	static Chat chatInfo;
 
 	public SetNameplateListener(CatBot catBot)
 	{
@@ -42,53 +42,58 @@ public class SetNameplateListener implements Listener
 	    cat = board.registerNewTeam("Cat");
 	    cat.setPrefix(ChatColor.DARK_GRAY + "[Cat]");
 	}
-    
-	@SuppressWarnings("deprecation")
+
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e)
 	{
-		Player p = e.getPlayer();
-		String name = p.getName();
-		//Warn if player has no prefix/group because that's pretty strange
-		if((permsInfo.getPlayerGroups(p).length==0)||chatInfo.getPlayerPrefix(p).isEmpty())
-		{
-			log.warning(CatBot.prefix + name + " had no prefix and/or group!");
-			return;
-		}
-
-		//Reset player's scoreboard just in case
-		board.resetScores(p);
-		p.setScoreboard(board);
+		assignPlate(e.getPlayer());
 		
-		//Iterate through player's groups to find one with highest priority
-		int pIndex = -1;
-		if(permsInfo.getPlayerGroups(p).length > 0)
-			for(String g:permsInfo.getPlayerGroups(p))
-			{
-				int i = groupList.indexOf(g);
-				pIndex = i>pIndex?i:pIndex;
-			}
+	}
+	
+	@SuppressWarnings("deprecation")
+    public static void assignPlate(Player p)
+	{
+	    String name = p.getName();
+        //Warn if player has no prefix/group because that's pretty strange
+        if((permsInfo.getPlayerGroups(p).length==0)||chatInfo.getPlayerPrefix(p).isEmpty())
+        {
+            log.warning(CatBot.prefix + name + " had no prefix and/or group!");
+            return;
+        }
 
-		//Now iterate through prefixes
-		String pPrefix = chatInfo.getPlayerPrefix(p);
-		for(String grp:groupList)
-		{
-		    int i = groupList.indexOf(grp);
-		    if(pPrefix.toLowerCase().contains(grp.toLowerCase())&&i>pIndex)
-		        pIndex = groupList.indexOf(grp);
-		}
-		
-		//Set player's prefix as long as they have one
-		if(pIndex!=-1)
-		{
-			groups[pIndex].addPlayer(p);
-			log.info(CatBot.cPrefix + "Assigning [" + groups[pIndex].getName() + "] tag to " + name + ".");
-		}
-		else
-		{
-			cat.addPlayer(p);
-			log.info(CatBot.cPrefix + "Assigning [Cat] (default) tag to " + name + ".");
-		}
+        //Reset player's scoreboard just in case
+        board.resetScores(p);
+        p.setScoreboard(board);
+        
+        //Iterate through player's groups to find one with highest priority
+        int pIndex = -1;
+        if(permsInfo.getPlayerGroups(p).length > 0)
+            for(String g:permsInfo.getPlayerGroups(p))
+            {
+                int i = groupList.indexOf(g);
+                pIndex = i>pIndex?i:pIndex;
+            }
+
+        //Now iterate through prefixes
+        String pPrefix = chatInfo.getPlayerPrefix(p);
+        for(String grp:groupList)
+        {
+            int i = groupList.indexOf(grp);
+            if(pPrefix.toLowerCase().contains(grp.toLowerCase())&&i>pIndex)
+                pIndex = groupList.indexOf(grp);
+        }
+        
+        //Set player's prefix as long as they have one
+        if(pIndex!=-1)
+        {
+            groups[pIndex].addPlayer(p);
+            log.info(CatBot.cPrefix + "Assigning [" + groups[pIndex].getName() + "] tag to " + name + ".");
+        }
+        else
+        {
+            cat.addPlayer(p);
+            log.info(CatBot.cPrefix + "Assigning [Cat] (default) tag to " + name + ".");
+        }
 	}
 
 	public static void loadCfg()

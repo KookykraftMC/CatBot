@@ -15,8 +15,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.kookykraftmc.catbot.commands.CommandFindName;
 import com.kookykraftmc.catbot.commands.CommandGeneral;
 import com.kookykraftmc.catbot.commands.CommandRTP;
+//import com.kookykraftmc.catbot.listeners.BungeeListener;
 import com.kookykraftmc.catbot.listeners.CatFilterEvents;
-import com.kookykraftmc.catbot.listeners.SetNameplateListener;
+import com.kookykraftmc.catbot.listeners.JoinEvents;
 
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.permission.Permission;
@@ -37,8 +38,14 @@ public class CatBot extends JavaPlugin
 	    rspPerms = this.getServer().getServicesManager().getRegistration(Permission.class);
 	    rspChat = this.getServer().getServicesManager().getRegistration(Chat.class);
 		PluginDescriptionFile pdf = getDescription();
-		File cfg = new File(getDataFolder(), "config.yml");
+		
+        /*
+        CatBroadcast broadcaster = new CatBroadcast(this);
+        this.getCommand("catbroadcast").setExecutor(broadcaster);
+        Bukkit.getPluginManager().registerEvents(broadcaster, this);
+        */
 
+		File cfg = new File(getDataFolder(), "config.yml");
         if (!cfg.exists())
         {
             log.info(cPrefix + "Config not found, creating!");
@@ -46,7 +53,8 @@ public class CatBot extends JavaPlugin
         }
         else if(!this.getConfig().contains("Version")||!pdf.getVersion().equals(this.getConfig().getString("Version")))
         {
-        	log.info(cPrefix + "Outdated config found, saving new version.");
+            log.info(cPrefix + "Outdated config found, saving new version.");
+            cfg.delete();
         	saveDefaultConfig();
         }
         else
@@ -56,7 +64,7 @@ public class CatBot extends JavaPlugin
 
         if(getConfig().getStringList("BadWords").isEmpty()||getConfig().getStringList("ReplaceWords").isEmpty())
         {
-        	log.info(cPrefix + "No chat filter words found. Chat filter disabled.");
+            log.warning(cPrefix + "No chat filter words found. Chat filter disabled.");
         }
         else
         {
@@ -66,28 +74,40 @@ public class CatBot extends JavaPlugin
 		
         if(getConfig().getStringList("GroupColours").isEmpty())
         {
-        	log.info(cPrefix + "No Group Colours found. Nameplate changer disabled.");
+            log.warning(cPrefix + "No Group Colours found. Nameplate changer disabled.");
         }
         else
         {
-            getServer().getPluginManager().registerEvents(new SetNameplateListener(this), this);
+            getServer().getPluginManager().registerEvents(new JoinEvents(this), this);
             log.info(cPrefix + "Nameplate Changer Enabled.");
         }
 
         this.getCommand("findname").setExecutor(new CommandFindName());
         this.getCommand("catbot").setExecutor(new CommandGeneral(this));
-        this.getCommand("rtp").setExecutor(new CommandRTP(this));
-        log.info(cPrefix + "Commands Enabled.");
+        
+        if(this.getConfig().getBoolean("RTP.Enabled"))
+        {
+            log.info(cPrefix + "Enabling RTP");
+            this.getCommand("rtp").setExecutor(new CommandRTP(this));
+        }
+        else
+        {
+           log.warning(cPrefix + "RTP Command disabled in config.");
+        }
         
         if(Bukkit.getServer().getOnlinePlayers().size() > 0)
         {
             for(Player p:Bukkit.getServer().getOnlinePlayers())
             {
-                SetNameplateListener.assignPlate(p);
+                JoinEvents.assignPlate(p);
             }
         }
-        //ScheduledCommand.enable(this);
-		log.info(pdf.getName() + " " + pdf.getVersion() + " is now enabled.");
+        
+        //BungeeListener bungeeStuff = new BungeeListener(this);
+        //Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", bungeeStuff);
+        //Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+
+        log.info(pdf.getName() + " " + pdf.getVersion() + " is now enabled.");
 	}
 
 	public void onDisable()
@@ -102,12 +122,12 @@ public class CatBot extends JavaPlugin
                 deleteDir(new File(serverDir.getAbsolutePath().subSequence(0, (int) (serverDir.getAbsolutePath().length() - 2)) + File.separator + "world" + File.separator + world));
 		}
 		*/
-	    SetNameplateListener.clearTeams();
+	    JoinEvents.clearTeams();
 	    PluginDescriptionFile pdf = getDescription();
 	    log.info(pdf.getName() + pdf.getVersion() + " is now disabled");
 	}
 	
-	public static void deleteDir(File element)
+	/*public static void deleteDir(File element)
 	{
 	    if (element.isDirectory())
 	    {
@@ -118,13 +138,13 @@ public class CatBot extends JavaPlugin
 	        }
 	    }
 	    element.delete();
-	}
+	}*/
 
 	public void reloadCfg()
 	{
 		this.reloadConfig();
 		CatFilterEvents.loadCfg();
-		SetNameplateListener.loadCfg();
+		JoinEvents.loadCfg();
 		CommandGeneral.loadCfg();
 		//FileManager.loadCmds();
 	}

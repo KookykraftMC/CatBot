@@ -12,41 +12,33 @@ import org.bukkit.block.Biome;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import com.kookykraftmc.catbot.CatBot;
 
 public class CommandRTP implements CommandExecutor
 {
-	private static final double BORDER = 10000;
-	private static final int MAX_USES = 3;
-	private static final String CMD_NAME = "rtp";
-	private static final Logger log = CatBot.log;
-	private static final Random rdm = new Random(System.nanoTime());
-	private static final HashSet<Biome> biomeBlacklist = new HashSet<Biome>();
-	private static final HashSet<Material> allowedLandingBlocks = new HashSet<Material>();
-	private static final int safeZoneRadius = 2;
-	private static final int safeZoneHeight = 4;
-	private static final int maxTries = 50;
+    private static final Logger log = CatBot.log;
+    private static final Random rdm = new Random(System.nanoTime());
+    private static final HashSet<Biome> biomeBlacklist = new HashSet<Biome>();
+    private static final HashSet<Material> allowedLandingBlocks = new HashSet<Material>();
+    private static final HashSet<String> allowedWorlds = new HashSet<String>();
+    private static final String CMD_NAME = "rtp";
+
+    //Assigning default values in case none are defined
+	private static double BORDER = 10000;
+	private static int MAX_USES = 3;
+	private static int SAFE_ZONE_RADIUS = 2;
+	private static int SAFE_ZONE_HEIGHT = 4;
+	private static int MAX_TRIES = 50;
 
 	static CatBot plugin;
 
 	public CommandRTP(CatBot cb)
 	{
 		plugin = cb;
-		biomeBlacklist.add(Biome.OCEAN);
-		biomeBlacklist.add(Biome.DEEP_OCEAN);
-		biomeBlacklist.add(Biome.FROZEN_OCEAN);
-		biomeBlacklist.add(Biome.RIVER);
-		biomeBlacklist.add(Biome.FROZEN_RIVER);
-		biomeBlacklist.add(Biome.BEACH);
-		biomeBlacklist.add(Biome.COLD_BEACH);
-		biomeBlacklist.add(Biome.STONE_BEACH);
-		allowedLandingBlocks.add(Material.DIRT);
-		allowedLandingBlocks.add(Material.GRASS);
-		allowedLandingBlocks.add(Material.SAND);
-		allowedLandingBlocks.add(Material.HARD_CLAY);
-		allowedLandingBlocks.add(Material.MYCEL);
+		loadCfg();
 	}
 
 	@Override
@@ -94,6 +86,11 @@ public class CommandRTP implements CommandExecutor
 		return true;
 	}
 	
+	/**
+	 * TP player to random location in their world
+	 * @param p Player to RTP
+	 * @return success?
+	 */
 	private boolean rtp(final Player p)
 	{
 	    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
@@ -101,6 +98,11 @@ public class CommandRTP implements CommandExecutor
             public void run()
             {
                 final World w = p.getLocation().getWorld();
+                if(!allowedWorlds.contains(w.getName()))
+                {
+                    p.sendMessage(CatBot.prefix + "You cannot RTP in this world.");
+                    return;
+                }
                 final int max = w.getMaxHeight();
                 final String name = p.getName();
                 boolean locationDone = false;
@@ -108,7 +110,7 @@ public class CommandRTP implements CommandExecutor
                 int counter = 0;
                 while (!locationDone)
                 {
-                    if(++counter > maxTries)
+                    if(++counter > MAX_TRIES)
                     {
                         p.sendMessage(CatBot.prefix + "Couldn't find a safe place to teleport to :( please contact staff, preferably Kraise.");
                         log.severe(CatBot.cPrefix + "Could not find a place to RTP " + name + ". This is a big problem, tell someone!");
@@ -135,11 +137,11 @@ public class CommandRTP implements CommandExecutor
                             continue;
                             
                         int safeNum = 0;
-                        for(double x = -safeZoneRadius;x<=safeZoneRadius;x++)
+                        for(double x = -SAFE_ZONE_RADIUS;x<=SAFE_ZONE_RADIUS;x++)
                         {
-                            for(double z = -safeZoneRadius; z<=safeZoneRadius; z++)
+                            for(double z = -SAFE_ZONE_RADIUS; z<=SAFE_ZONE_RADIUS; z++)
                             {
-                                for(double y = 0; y <= safeZoneHeight; y++)
+                                for(double y = 0; y <= SAFE_ZONE_HEIGHT; y++)
                                 {
                                     checkLoc.setX(loc.getX() + x);
                                     checkLoc.setY(loc.getY() + y);
@@ -149,7 +151,7 @@ public class CommandRTP implements CommandExecutor
                                 }
                             }
                         }
-                        if(safeNum < 0.75 * safeZoneRadius * safeZoneRadius * safeZoneHeight)
+                        if(safeNum < 0.75 * SAFE_ZONE_RADIUS * SAFE_ZONE_RADIUS * SAFE_ZONE_HEIGHT)
                             continue;
                         else
                         {
@@ -166,6 +168,62 @@ public class CommandRTP implements CommandExecutor
             }
 	    });
 		return true;
+	}
+	
+	public static void loadCfg()
+	{
+	    FileConfiguration cfg = plugin.getConfig();
+	    BORDER = cfg.getDouble("RTP.Border");
+	    MAX_USES = cfg.getInt("RTP.MaxUses");
+	    SAFE_ZONE_RADIUS = cfg.getInt("RTP.SafeZoneRadius");
+	    SAFE_ZONE_HEIGHT = cfg.getInt("RTP.SafeZoneHeight");
+	    MAX_TRIES = cfg.getInt("RTP.MaxTries");
+	    //Add biomes to blacklist
+	    for(String biomeName:cfg.getStringList("RTP.BiomeBlacklist"))
+	    {
+	        Biome biome = Biome.valueOf(biomeName);
+	        if(biome == null)
+	        {
+	            log.warning(CatBot.cPrefix + "Unknown biome declared in config: " + biomeName + ". Ignoring.");
+	            continue;
+	        }
+	        biomeBlacklist.add(biome);
+	    }
+	    if(biomeBlacklist.isEmpty())
+	        log.warning(CatBot.cPrefix + "No biomes have been blacklisted. No valid biomes were declared in the config.");
+	    
+	    //Do the same with landing blocks
+        for(String blockName:cfg.getStringList("RTP.LandingBlocks"))
+        {
+            Material mat = Material.getMaterial(blockName);
+            if(mat == null)
+            {
+                log.warning(CatBot.cPrefix + "Unknown block declared in config: " + blockName + ". Ignoring.");
+                continue;
+            }
+            allowedLandingBlocks.add(mat);
+        }
+        if(allowedLandingBlocks.isEmpty())
+        {
+            log.severe(CatBot.cPrefix + "No landing blocks have been found, no valid blocks were defined in config. Defaulting to grass blocks.");
+            allowedLandingBlocks.add(Material.GRASS);
+        }
+        
+        //And Worlds
+        for(String worldName:cfg.getStringList("RTP.Worlds"))
+        {
+            if(Bukkit.getWorld(worldName) == null)
+            {
+                log.warning(CatBot.cPrefix + "Unknown world declared in config: " + worldName + ". Ignoring.");
+                continue;
+            }
+            allowedWorlds.add(worldName);
+        }
+        if(allowedWorlds.isEmpty())
+        {
+            log.severe(CatBot.cPrefix + "No allowed worlds have been found, no valid worlds were defined in config. Defaulting to world.");
+            allowedWorlds.add("world");
+        }
 	}
 
 }

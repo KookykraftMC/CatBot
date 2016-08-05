@@ -24,11 +24,13 @@ BadWords:
   - "\\brape"
   - "slut"
   - "hitler"
-  - "\\b(jack)?ass(hole)?\\b"
+  - "\\b(jack)?ass(holes?|lick|wipe)?\\b"
   - "arse(hole)?"
   - "bitch"
   - "whore"
   - "nigg(er|a)"
+  - "bastard"
+  - "bea?stiality"
   - "negro"
   - "retard"
   - "\\bcum\\b"
@@ -53,7 +55,7 @@ ReplaceWords:
 #Leave blank to disable nameplate changing
 #Tags will be assigned with a priority based on position - player with KoolKat and Mod will be tagged as mod
 GroupColours:
-  - "Default,g"
+  - "Guest,g"
   - "Member,e"
   - "Fan,9"
   - "VIP,2"
@@ -81,3 +83,34 @@ AllowedGroups:
   - "KatGod"
   - "UltimateKat"
   - "UnlimitedHomes"
+
+#Config for the rtp commmand
+RTP:
+    Enabled: true
+    Worlds:
+      - world
+    Border: 10000
+    MaxUses: 3
+    SafeZoneRadius: 2
+    SafeZoneHeight: 4
+    MaxTries: 50
+    BiomeBlacklist:
+      - OCEAN
+      - DEEP_OCEAN
+      - FROZEN_OCEAN
+      - RIVER
+      - FROZEN_RIVER
+      - BEACH
+      - COLD_BEACH
+      - STONE_BEACH
+    LandingBlocks:
+      - DIRT
+      - GRASS
+      - SAND
+      - HARD_CLAY
+      - MYCEL
+
+
+#Whitelist: Do not use this!
+#    Enabled: true
+#    Players:

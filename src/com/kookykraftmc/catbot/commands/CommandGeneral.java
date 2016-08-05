@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import com.kookykraftmc.catbot.CatBot;
+import com.kookykraftmc.catbot.listeners.JoinEvents;
 
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.permission.Permission;
@@ -329,17 +330,64 @@ public class CommandGeneral implements CommandExecutor
 		case "rmvip":
 	          if(!sender.hasPermission("catbot.removevip"))
               {
-                msgSender("Hiss! (you do not have permission to do this!");
-               return true;
+	              msgSender("Hiss! (you do not have permission to do this!");
+	              break;
               }
 	          else if(args.length < 2)
 	          {
 	              msgSender("Usage: /catbot rmvip (player)");
+	              break;
 	          }
+	          Player playerToRemove = Bukkit.getPlayer(args[1]);
+	          perms.playerAdd(playerToRemove, "-essentials.warps.vip");
+	          msgSender("Removed VIP warp permissions from " + playerToRemove.getName() + ". Make sure to report this!");
 	          break;
+		case "whitelist":
+            boolean isWL = JoinEvents.isWhitelisted;
+            if(!sender.hasPermission("catbot.whitelist"))
+            {
+                msgSender("Hiss! (you do not have permission to do this!");
+                break;
+            }
+            else if(args.length < 2)
+            {
+                msgSender("Usage: /catbot whitelist add||remove||on||off||toggle");
+                msgSender("Is whitelisted: " + isWL);
+                break;
+            }
+            switch(args[1])
+            {
+            case "on":
+                msgSender(JoinEvents.enableWhitelist()?"Whitelist enabled. Do /catbot whitelist off to disable.":"Whitelist is already on.");
+                break;
+            case "off":
+                msgSender(JoinEvents.disableWhitelist()?"Whitelist disabled.":"Whitelist is already disabled.");
+                break;
+            case "toggle":
+                msgSender(JoinEvents.disableWhitelist()?"Whitelist enabled.":"Whitelist disabled.");
+                break;
+            case "add":
+                if(args.length < 3)
+                {
+                    msgSender("Usage: /catbot whitelist add (player)");
+                    break;
+                }
+                JoinEvents.addToWhitelist(args[2]);
+                msgSender(args[2] + " added to whitelist.");
+                break;
+            case "remove":
+                if(args.length < 3)
+                {
+                    msgSender("Usage: /catbot whitelist remove (player)");
+                    break;
+                }
+                msgSender(JoinEvents.removeFromWhitelist(args[2])?args[2] + " removed from whitelist.":args[2] + " is not whitelisted.");
+                
+            }
+            break;
 		default:
 			msgSender("Meow.");
-			return false;
+			break;
 		}
 		sender = null;
 		return true;

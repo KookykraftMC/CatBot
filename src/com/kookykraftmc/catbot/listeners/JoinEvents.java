@@ -1,5 +1,6 @@
 package com.kookykraftmc.catbot.listeners;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -12,8 +13,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
@@ -22,10 +26,10 @@ import com.kookykraftmc.catbot.CatBot;
 
 public class JoinEvents implements Listener
 {
-    final static Logger log = Bukkit.getServer().getLogger();
-    final static ScoreboardManager boardManager = Bukkit.getScoreboardManager();
+    static final Logger log = Bukkit.getServer().getLogger();
+    static final ScoreboardManager boardManager = Bukkit.getScoreboardManager();
     static private HashSet<String> whitelist = new HashSet<String>();
-    public static boolean isWhitelisted = false;
+    static public boolean isWhitelisted = false;
     static private String kickMsg = "This server is currently whitelisted for maintenance. Sorry!";
     static CatBot plugin;
     static List<String> groupList;
@@ -55,10 +59,9 @@ public class JoinEvents implements Listener
         assignPlate(p);
         
         //Whitelisting
-        /*if(isWhitelisted)
+        if(isWhitelisted)
             if(!whitelist.contains(p.getName().toLowerCase()))
                 p.kickPlayer(kickMsg);
-                */
     }
 
     @SuppressWarnings("deprecation")
@@ -145,12 +148,10 @@ public class JoinEvents implements Listener
         
         
         //Whitelisting
-        /*addToWhitelist(plugin.getConfig().getStringList("Whitelist.Players"));
+        addToWhitelist(plugin.getConfig().getStringList("Whitelist.Players"));
         isWhitelisted = plugin.getConfig().getBoolean("Whitelist.Enabled");
         if(isWhitelisted)
-        {
             log.severe(CatBot.cPrefix + "THIS SERVER IS WHITELISTED! Players will not be able to join until you run /catbot whitelist off");
-        }*/
     }
     
     public static void clearTeams()
@@ -200,7 +201,7 @@ public class JoinEvents implements Listener
        String ls = "";
        for(String s:ss)
        {
-           whitelist.add(s);
+           whitelist.add(s.toLowerCase());
            ls += s + "; ";
        }
        log.info(CatBot.cPrefix + "Adding players to whitelist: " + ls);
@@ -208,8 +209,56 @@ public class JoinEvents implements Listener
    
    public static boolean removeFromWhitelist(String s)
    {
-       boolean didRemove = whitelist.remove(s);
-       log.info(CatBot.cPrefix + "Attempting to remove " + s + " from blacklist. " + (didRemove?"Success":"Fail"));
+       s = s.toLowerCase();
+       boolean didRemove = false;
+       for(String name:whitelist)
+       {
+           if(name.equals(s))
+           {
+               whitelist.remove(name);
+               log.info("Removed " + name + " from whitelist.");
+               return true;
+           }
+       }
+       log.info(CatBot.cPrefix + "Failed to remove " + s + " from whitelist.");
        return didRemove;
    }
+
+   public static ArrayList<String> getWhitelist()
+   {
+       return new ArrayList<String>(whitelist);
+   }
+   
+   public static String getWhitelistString()
+   {
+       String ls = "";
+       for(String name:whitelist)
+       {
+           ls += (", " + name);
+       }
+       ls.substring(1);
+       return ls;
+   }
+   
+   @EventHandler(priority = EventPriority.LOWEST)
+   public void tryVanillaWhitelist(PlayerCommandPreprocessEvent e)
+   {
+       if(!e.getMessage().startsWith("/whitelist"))
+           return;
+       Player p = e.getPlayer();
+       p.sendMessage(CatBot.prefix + "Use \"/catbot whitelist\" instead!");
+       e.setMessage("ping");
+       e.setCancelled(true);
+       p.performCommand("catbot whitelist");
+   }
+   
+   @EventHandler(priority = EventPriority.LOWEST)
+   public void tryVanillaWhitelist(ServerCommandEvent e)
+   {
+       if(!e.getCommand().startsWith("whitelist"))
+           return;
+       log.info(CatBot.prefix + "Use \"/catbot whitelist\" instead!");
+       e.setCommand("ping");
+   }
+   
 }

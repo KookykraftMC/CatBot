@@ -124,6 +124,11 @@ public class CatBot extends JavaPlugin
 		*/
 	    JoinEvents.clearTeams();
 	    PluginDescriptionFile pdf = getDescription();
+	    {
+	        getConfig().set("Whitelist.Players", JoinEvents.getWhitelist());
+	        getConfig().set("Whitelist.Enabled", JoinEvents.isWhitelisted);
+	    }
+	    saveConfig();
 	    log.info(pdf.getName() + pdf.getVersion() + " is now disabled");
 	}
 	

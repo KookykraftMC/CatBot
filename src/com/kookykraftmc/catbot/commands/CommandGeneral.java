@@ -338,10 +338,34 @@ public class CommandGeneral implements CommandExecutor
 	              msgSender("Usage: /catbot rmvip (player)");
 	              break;
 	          }
-	          Player playerToRemove = Bukkit.getPlayer(args[1]);
-	          perms.playerAdd(playerToRemove, "-essentials.warps.vip");
+	          Player playerToRemove = Bukkit.getPlayerExact(args[1]);
+	          if(playerToRemove == null)
+	          {
+	              msgSender("That player could not be found. Make sure to get their name exactly right, and that they're online.");
+	              return true;
+	          }
+	          perms.playerAdd((Player) playerToRemove, "-essentials.warps.vip");
 	          msgSender("Removed VIP warp permissions from " + playerToRemove.getName() + ". Make sure to report this!");
 	          break;
+		case "givechunkloader":
+            if(!sender.hasPermission("catbot.bclperms"))
+            {
+                msgSender("Hiss! (you do not have permission to do this!");
+                break;
+            }
+            else if(args.length < 2)
+            {
+                msgSender("Usage: /catbot bclperms (player)");
+                break;
+            }
+            Player toAddPerms = Bukkit.getPlayerExact(args[1]);
+            if(toAddPerms == null)
+            {
+                msgSender("That player could not be found. Make sure to get their name exactly right, and that they're online.");
+                return true;
+            }
+            perms.playerAdd(toAddPerms, "betterchunkloader.onlineonly");
+            msgSender("Given chunk loaders to " + args[1] + ". Remember this will not work for giving extra chunks.");
 		case "whitelist":
             boolean isWL = JoinEvents.isWhitelisted;
             if(!sender.hasPermission("catbot.whitelist"))
@@ -382,7 +406,11 @@ public class CommandGeneral implements CommandExecutor
                     break;
                 }
                 msgSender(JoinEvents.removeFromWhitelist(args[2])?args[2] + " removed from whitelist.":args[2] + " is not whitelisted.");
-                
+                break;
+            case "list":
+                msgSender("Currently whitelisted people: " + JoinEvents.getWhitelistString() + ".");
+                msgSender("Whitelist is currently " + (JoinEvents.isWhitelisted?"ON":"OFF"));
+                break;
             }
             break;
 		default:

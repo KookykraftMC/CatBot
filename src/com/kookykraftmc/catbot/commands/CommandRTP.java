@@ -98,7 +98,7 @@ public class CommandRTP implements CommandExecutor
             public void run()
             {
                 final World w = p.getLocation().getWorld();
-                if(!allowedWorlds.contains(w.getName()))
+                if(!allowedWorlds.contains(w.getName()) && !p.hasPermission("catbot.rtpanyworld"))
                 {
                     p.sendMessage(CatBot.prefix + "You cannot RTP in this world.");
                     return;
@@ -122,7 +122,7 @@ public class CommandRTP implements CommandExecutor
                         continue;
 
                     //Try to find a surface to land on
-                    for(int i = max - 150;i > 0;i--)
+                    for(int i = max - 150;i > p.getWorld().getSeaLevel();i--)
                     {
                         loc.setY(i);
                         if(!allowedLandingBlocks.contains(loc.getBlock().getType()))

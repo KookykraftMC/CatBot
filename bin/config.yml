@@ -1,5 +1,5 @@
 #Do not change this, this is the option that resets outdated config
-Version: 4.5
+Version: 4.8
 
 #Msg shown when people say bad things
 DenyMsg: "We do not allow that kind of language! Sorry!"
@@ -110,10 +110,22 @@ RTP:
       - HARD_CLAY
       - MYCEL
 
-#Questions:
-#    - "is.{5,40}banned;You can find the banned items list (with reasons) at http://kkmc.info/21MSqpn"
-#    - "am i an shrub;ye"
+Questions:
+    - "is.{5,40}banned;You can find the banned items list (with reasons) at http://kkmc.info/21MSqpn"
+    - "am i an shrub;ye"
 
-#Whitelist: Do not use this!
-#    Enabled: true
-#    Players:
+Whitelist:
+    Enabled: false
+    Players:
+      - Time6628
+      - KookyKraftMC
+      - TimeTheCat
+      - ChocTheCat
+      - Kraise_
+      - MrFisher_
+      - Groompy
+      - Zyorga
+      - STS15
+      - TysonTheCat
+      - Javatech
+      - Giraffiki

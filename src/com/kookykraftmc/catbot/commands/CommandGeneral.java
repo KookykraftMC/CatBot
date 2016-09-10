@@ -203,7 +203,7 @@ public class CommandGeneral implements CommandExecutor
 				msgSender("Player " + args[1] + " not found.");
 				return true;
 			}
-			p.performCommand("cofh tps");
+			p.performCommand("cofh tps o");
 			msgSender("Showing " + args[1] + " the tps.");
 			return true;
 			

@@ -61,15 +61,9 @@ public class CatFilterEvents implements Listener
             String toTest = "(?iu).*" + qAndA.get(0) + ".*";
             if(originalMsg.matches(toTest))
             {
-                Bukkit.getScheduler().runTaskLater(plugin, new Runnable(){
-
-                    @Override
-                    public void run()
-                    {
-                        p.sendMessage(CatBot.prefix + qAndA.get(1));
-                        log.info(CatBot.cPrefix + "Answering with " + qAndA.get(1));
-                    }
-                    
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    p.sendMessage(CatBot.prefix + qAndA.get(1));
+                    log.info(CatBot.cPrefix + "Answering with " + qAndA.get(1));
                 }, 10L);
             }
         }

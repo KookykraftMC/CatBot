@@ -14,7 +14,7 @@ ResetWorlds:
 #Jk, ily Java
 #Leave blank to disable chat filter
 BadWords:
-  - "\\bl(a|@)g+(y|ing|s)?\\b"
+  - "\\bl+(a+|@)g+.*?\\b"
   - "dick"
   - "fuck"
   - "\\b(bull)?shit+?(ing|y)?\\b"

@@ -17,23 +17,22 @@ BadWords:
   - "\\bl(a|@)g+(y|ing|s)?\\b"
   - "dick"
   - "fuck"
-  - "\\b(bull)?shitt?(ing|y)?\\b"
+  - "\\b(bull)?shit+?(ing|y)?\\b"
   - "penis"
-  - "vagina"
-  - "fag"
+  - "\\bvag.*(ina|s)(?<!us|al)$"
+  - "fag?"
   - "\\brape"
   - "slut"
   - "hitler"
-  - "\\b(jack)?ass(holes?|lick|wipe)?\\b"
-  - "arse(hole)?"
+  - "\\b(jack)?ass(holes?|hat|lick|wipe)?\\b"
+  - "\\barse(hole)?"
   - "bitch"
   - "whore"
   - "nigg(er|a)"
   - "bastard"
-  - "bea?stiality"
   - "negro"
   - "retard"
-  - "\\bcum\\b"
+  - "\\bcum?(ming|med)?\\b"
   - "cunt"
   - "dildo"
   - "bollocks?"
@@ -46,6 +45,7 @@ ReplaceWords:
   - "meow"
   - "purr"
   - "hiss"
+  #-"§r"
 
 #How to assign tags to groups - should be in the form "group,colour" (no space)
 #Groups must be exactly as in permissions.yml, case insensitive. Will appear ingame as written here
@@ -56,17 +56,14 @@ ReplaceWords:
 #Tags will be assigned with a priority based on position - player with KoolKat and Mod will be tagged as mod
 GroupColours:
   - "Guest,g"
-  - "Member,e"
-  - "Fan,9"
-  - "VIP,2"
-  - "VIP+,a"
-  - "KoolKat,5"
-  - "KatGod,6"
-  - "UltimateKat,u"
+  - "Regular,9"
+  - "Spark,e"
+  - "Flame,e"
+  - "Blaze,a"
+  - "Inferno,6"
   - "Builder,3"
   - "Developer,b"
-  - "Assistant,b"
-  - "Helper,b"
+  - "jrmod,b"
   - "Mod,c"
   - "Admin,4"
   - "SeniorAdmin,s"
@@ -75,14 +72,9 @@ GroupColours:
 #Groups that can be assigned using catbot - case insensitive
 AllowedGroups:
   - "default"
-  - "member"
-  - "fan"
-  - "VIP"
-  - "VIP+"
-  - "KoolKat"
-  - "KatGod"
-  - "UltimateKat"
-  - "UnlimitedHomes"
+  - "regular"
+  - "jrmod"
+  - "mod"
 
 #Config for the rtp commmand
 RTP:
@@ -109,6 +101,7 @@ RTP:
       - SAND
       - HARD_CLAY
       - MYCEL
+      #- STONE
 
 Questions:
     - "is.{5,40}banned;You can find the banned items list (with reasons) at http://kkmc.info/21MSqpn"
@@ -120,12 +113,9 @@ Whitelist:
       - Time6628
       - KookyKraftMC
       - TimeTheCat
-      - ChocTheCat
       - Kraise_
       - MrFisher_
-      - Groompy
-      - Zyorga
-      - STS15
-      - TysonTheCat
       - Javatech
-      - Giraffiki
+      - TheOnlyOneLeft
+      - _oreo12_
+      - 2013_emi

@@ -39,6 +39,9 @@ BadWords:
   - "\\bwank"
   - "jizz"
   - "piss"
+  - "puss"
+  - "porn"
+  - "\\bcock"
 
 #Words that could be used to replace bad words
 ReplaceWords:

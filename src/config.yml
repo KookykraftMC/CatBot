@@ -20,7 +20,7 @@ BadWords:
   - "\\b(bull)?shit+?(ing|y)?\\b"
   - "penis"
   - "\\bvag.*(ina|s)(?<!us|al)$"
-  - "fag?"
+  - "fag"
   - "\\brape"
   - "slut"
   - "hitler"
@@ -41,7 +41,10 @@ BadWords:
   - "piss"
   - "puss"
   - "porn"
-  - "\\bcock"
+  - "\\bcock.*(?<!y|atiel|apoo|tail)\\b"
+  - "\\bdup(e|ed|ing)\\b"
+
+
 
 #Words that could be used to replace bad words
 ReplaceWords:
